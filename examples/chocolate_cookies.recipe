@@ -1,0 +1,33 @@
+# Chocolate Chip Cookies Recipe
+# A delicious cookie recipe demonstrating RecipeScript
+
+ingredient flour = 2 cups;
+ingredient sugar = 1 cups;
+ingredient butter = 0.5 cups;
+ingredient chocolate_chips = 1 cups;
+ingredient eggs = 2 cups;
+temp oven = 350 F;
+
+# Preheat the oven
+heat oven to 350 F;
+serve "Preheating oven...";
+wait 10 minutes;
+
+# Mix dry ingredients
+mix flour with sugar;
+serve "Mixed dry ingredients";
+
+# Add wet ingredients
+mix flour with butter;
+add eggs to flour;
+serve "Added wet ingredients";
+
+# Add chocolate chips
+add chocolate_chips to flour;
+serve "Added chocolate chips";
+
+# Bake
+serve "Baking cookies...";
+wait 15 minutes;
+
+serve "Chocolate chip cookies are ready! Enjoy!";

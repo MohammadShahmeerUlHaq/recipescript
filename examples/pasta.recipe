@@ -1,0 +1,27 @@
+# Simple Pasta Recipe
+# Quick and easy pasta with tomato sauce
+
+ingredient pasta = 500 grams;
+ingredient water = 2 cups;
+ingredient tomato_sauce = 1 cups;
+ingredient salt = 1 tsp;
+temp stove = 212 F;
+time cook_time = 10 minutes;
+
+# Boil water
+heat stove to 212 F;
+serve "Heating water...";
+wait 5 minutes;
+
+# Add pasta
+mix pasta with water;
+add salt to pasta;
+serve "Cooking pasta...";
+wait 10 minutes;
+
+# Add sauce
+add tomato_sauce to pasta;
+serve "Adding sauce...";
+wait 2 minutes;
+
+serve "Pasta is ready to serve!";

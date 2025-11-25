@@ -1,0 +1,11 @@
+# Test 4: Repeated Steps
+# Tests: Repeat control flow
+
+ingredient dough = 1 lbs;
+
+repeat 3 times {
+    mix dough;
+    wait 5 minutes;
+}
+
+serve "Dough kneaded perfectly!";

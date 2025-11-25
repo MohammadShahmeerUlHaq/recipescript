@@ -1,0 +1,14 @@
+# Test 3: Conditional Cooking
+# Tests: When/then/else control flow
+
+temp current = 300 F;
+temp target = 350 F;
+temp oven = 0 F;
+
+when current < target then {
+    heat oven to 350 F;
+    wait 10 minutes;
+    serve "Oven preheated!";
+} else {
+    serve "Oven already hot!";
+}

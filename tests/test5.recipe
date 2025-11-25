@@ -1,0 +1,13 @@
+# Test 5: Complex Recipe with Multiple Operations
+# Tests: Multiple ingredients, mixing, adding
+
+ingredient tomatoes = 3 cups;
+ingredient onions = 1 cups;
+ingredient garlic = 2 tbsp;
+ingredient salt = 1 tsp;
+
+mix tomatoes with onions;
+add garlic to tomatoes;
+add salt to tomatoes;
+wait 30 minutes;
+serve "Tomato sauce ready!";

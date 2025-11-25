@@ -1,0 +1,12 @@
+# Test 1: Simple Cookie Recipe
+# Tests: Basic declarations, operations, and output
+
+ingredient flour = 2 cups;
+ingredient sugar = 1 cups;
+ingredient butter = 0.5 cups;
+temp oven = 350 F;
+
+heat oven to 350 F;
+mix flour with sugar with butter;
+wait 15 minutes;
+serve "Cookies are ready!";

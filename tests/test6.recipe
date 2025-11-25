@@ -1,0 +1,11 @@
+# Test 6: Temperature Conversion and Timing
+# Tests: Different temperature units and time units
+
+temp oven = 180 C;
+time prep_time = 45 minutes;
+ingredient cake_mix = 500 grams;
+
+heat oven to 180 C;
+mix cake_mix;
+wait 45 minutes;
+serve "Cake is baked!";

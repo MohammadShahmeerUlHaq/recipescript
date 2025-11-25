@@ -1,0 +1,9 @@
+# Test 2: Scaled Recipe
+# Tests: Scaling operation and quantity manipulation
+
+ingredient rice = 1 cups;
+quantity servings = 4;
+
+scale rice by 2;
+wait 20 minutes;
+serve "Rice for 8 people ready!";

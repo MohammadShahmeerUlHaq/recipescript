@@ -1,0 +1,33 @@
+# Homemade Bread Recipe
+# Traditional bread with kneading
+
+ingredient flour = 3 cups;
+ingredient water = 1 cups;
+ingredient yeast = 2 tbsp;
+ingredient salt = 1 tsp;
+temp oven = 375 F;
+
+# Mix ingredients
+mix flour with water;
+add yeast to flour;
+add salt to flour;
+serve "Mixed all ingredients";
+
+# Knead the dough
+repeat 5 times {
+    mix flour;
+    wait 2 minutes;
+}
+serve "Dough kneaded";
+
+# Let it rise
+serve "Letting dough rise...";
+wait 60 minutes;
+
+# Bake
+heat oven to 375 F;
+wait 10 minutes;
+serve "Baking bread...";
+wait 30 minutes;
+
+serve "Fresh bread is ready!";
