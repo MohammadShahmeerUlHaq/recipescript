@@ -61,6 +61,13 @@ quantity servings = 4;          # Numeric quantities
 text message = "Ready!";        # Text strings
 ```
 
+### Input Parameters (NEW!)
+```recipe
+input servings;                     # Get user input
+ingredient flour = 0.5 * servings cups;  # Dynamic calculation
+serve "Recipe for servings people!";     # Scalable recipes
+```
+
 ### Operations
 ```recipe
 mix flour with sugar with butter;   # Combine ingredients

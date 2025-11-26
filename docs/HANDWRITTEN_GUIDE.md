@@ -64,7 +64,39 @@ Write regular expressions for:
 
 ### 2.1 Parse Tree Derivations (Minimum 2 Required)
 
-#### Parse Tree 1: Simple Declaration
+#### Parse Tree 1: Input Statement
+```
+Code: input servings;
+
+Draw parse tree showing:
+<statement>
+    |
+<input_stmt> ;
+    |
+input <identifier>
+         |
+      servings
+```
+
+#### Parse Tree 2: Declaration with Expression
+```
+Code: ingredient flour = 0.5 * servings cups;
+
+Draw parse tree showing:
+<statement>
+    |
+<declaration>
+    |
+<type> <identifier> = <value>
+    |       |           |
+ingredient flour    <expression> <unit>
+                         |         |
+                    <term> * <factor>  cups
+                      |        |
+                     0.5    servings
+```
+
+#### Parse Tree 3: Simple Declaration
 ```
 Code: ingredient flour = 2 cups;
 
@@ -80,7 +112,7 @@ ingredient flour    <number> <unit>
                        2      cups
 ```
 
-#### Parse Tree 2: Mix Operation
+#### Parse Tree 4: Mix Operation
 ```
 Code: mix flour with sugar with butter;
 
@@ -100,7 +132,7 @@ mix <ingredient_list>
                        sugar            butter
 ```
 
-#### Parse Tree 3: When Statement (Conditional)
+#### Parse Tree 5: When Statement (Conditional)
 ```
 Code: when current < target then { heat oven to 350 F; }
 
@@ -112,7 +144,7 @@ Draw complete parse tree with:
 - <statement_list>
 ```
 
-#### Parse Tree 4: Repeat Statement
+#### Parse Tree 6: Repeat Statement
 ```
 Code: repeat 3 times { mix dough; }
 

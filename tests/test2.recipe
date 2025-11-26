@@ -1,9 +1,13 @@
-# Test 2: Scaled Recipe
-# Tests: Scaling operation and quantity manipulation
+# Test 2: Arithmetic Expressions
+# Tests: Arithmetic in declarations, calculations
 
-ingredient rice = 1 cups;
-quantity servings = 4;
+quantity base_amount = 2;
+quantity multiplier = 3;
 
-scale rice by 2;
+# Arithmetic expressions in declarations
+ingredient rice = base_amount * multiplier cups;
+ingredient water = 2 + 3 cups;
+ingredient salt = 10 - 8 tsp;
+
 wait 20 minutes;
-serve "Rice for 8 people ready!";
+serve "Rice ready!";

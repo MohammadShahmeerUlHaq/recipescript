@@ -1,0 +1,21 @@
+# Test 7: Input Parameters and Dynamic Scaling
+# Tests: Input statement, arithmetic expressions, dynamic calculations
+
+# Get number of servings from user
+input servings;
+
+# Calculate ingredients dynamically (per serving amounts)
+ingredient flour = 0.5 * servings cups;
+ingredient sugar = 0.25 * servings cups;
+ingredient butter = 0.125 * servings cups;
+ingredient eggs = 0.5 * servings cups;
+
+temp oven = 350 F;
+
+# Prepare recipe
+heat oven to 350 F;
+mix flour with sugar;
+add butter to flour;
+add eggs to flour;
+wait 15 minutes;
+serve "Cookies ready!";

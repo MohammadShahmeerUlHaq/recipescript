@@ -41,6 +41,10 @@ class ServeOperation(ASTNode):
     def __init__(self, message):
         self.message = message
 
+class DisplayOperation(ASTNode):
+    def __init__(self, variable):
+        self.variable = variable
+
 class ScaleOperation(ASTNode):
     def __init__(self, ingredient, factor):
         self.ingredient = ingredient
@@ -85,6 +89,10 @@ class Value(ASTNode):
         self.number = number
         self.unit = unit
 
+class InputStatement(ASTNode):
+    def __init__(self, var_name):
+        self.var_name = var_name
+
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -126,6 +134,10 @@ class Parser:
         if not self.current_token or self.current_token.type == TokenType.EOF:
             return None
         
+        # Input statement
+        if self.current_token.type == TokenType.INPUT:
+            return self.parse_input()
+        
         # Declaration
         if self.current_token.type in [TokenType.INGREDIENT, TokenType.TIME, 
                                        TokenType.TEMP, TokenType.QUANTITY, TokenType.TEXT]:
@@ -140,6 +152,8 @@ class Parser:
             return self.parse_wait()
         if self.current_token.type == TokenType.SERVE:
             return self.parse_serve()
+        if self.current_token.type == TokenType.DISPLAY:
+            return self.parse_display()
         if self.current_token.type == TokenType.SCALE:
             return self.parse_scale()
         if self.current_token.type == TokenType.ADD:
@@ -156,6 +170,13 @@ class Parser:
             return self.parse_assignment()
         
         self.error(f"Unexpected token: {self.current_token.type}")
+    
+    def parse_input(self):
+        """Parse input statement"""
+        self.expect(TokenType.INPUT)
+        var_name = self.expect(TokenType.IDENTIFIER).value
+        self.expect(TokenType.SEMICOLON)
+        return InputStatement(var_name)
     
     def parse_declaration(self):
         """Parse variable declaration"""
@@ -180,34 +201,22 @@ class Parser:
         return Assignment(name, value)
     
     def parse_value(self):
-        """Parse a value (number with optional unit)"""
-        if self.current_token.type == TokenType.NUMBER:
-            number = self.current_token.value
-            self.advance()
-            
-            # Check for unit
-            if self.current_token and self.current_token.type in [
-                TokenType.CUPS, TokenType.TBSP, TokenType.TSP, TokenType.ML, TokenType.OZ,
-                TokenType.GRAMS, TokenType.LBS, TokenType.FAHRENHEIT, TokenType.CELSIUS,
-                TokenType.MINUTES, TokenType.SECONDS, TokenType.HOURS
-            ]:
-                unit = self.current_token.type
-                self.advance()
-                return Value(number, unit)
-            
-            return Value(number)
+        """Parse a value (number with optional unit or expression)"""
+        # Try to parse as expression first (handles arithmetic)
+        expr = self.parse_expression()
         
-        if self.current_token.type == TokenType.STRING:
-            value = self.current_token.value
+        # Check if there's a unit after the expression
+        if self.current_token and self.current_token.type in [
+            TokenType.CUPS, TokenType.TBSP, TokenType.TSP, TokenType.ML, TokenType.OZ,
+            TokenType.GRAMS, TokenType.LBS, TokenType.FAHRENHEIT, TokenType.CELSIUS,
+            TokenType.MINUTES, TokenType.SECONDS, TokenType.HOURS
+        ]:
+            unit = self.current_token.type
             self.advance()
-            return String(value)
+            # Wrap expression with unit
+            return Value(expr, unit)
         
-        if self.current_token.type == TokenType.IDENTIFIER:
-            name = self.current_token.value
-            self.advance()
-            return Identifier(name)
-        
-        return self.parse_expression()
+        return expr
     
     def parse_mix(self):
         """Parse mix operation"""
@@ -246,6 +255,14 @@ class Parser:
         self.expect(TokenType.SEMICOLON)
         
         return ServeOperation(message)
+    
+    def parse_display(self):
+        """Parse display operation"""
+        self.expect(TokenType.DISPLAY)
+        variable = self.expect(TokenType.IDENTIFIER).value
+        self.expect(TokenType.SEMICOLON)
+        
+        return DisplayOperation(variable)
     
     def parse_scale(self):
         """Parse scale operation"""

@@ -76,7 +76,53 @@ Comment: #[^\n]*
 
 ### What to Draw:
 
-#### A. Parse Tree 1: Declaration Statement
+#### A. Parse Tree 1: Input Statement
+```
+Code: input servings;
+
+Draw tree structure:
+
+                <program>
+                    |
+              <statement_list>
+                    |
+                <statement>
+                    |
+            <input_stmt> ;
+                    |
+        input <identifier>
+                 |
+              servings
+
+Use boxes or circles for nodes
+Draw lines connecting parent to children
+Label each node clearly
+```
+
+#### B. Parse Tree 2: Declaration with Expression
+```
+Code: ingredient flour = 0.5 * servings cups;
+
+Draw tree structure:
+
+                <program>
+                    |
+              <statement_list>
+                    |
+                <statement>
+                    |
+            <declaration> ;
+                    |
+        <type> <identifier> = <value>
+          |        |              |
+     ingredient  flour    <expression> <unit>
+                               |         |
+                          <term> * <factor>  cups
+                            |        |
+                           0.5    servings
+```
+
+#### C. Parse Tree 3: Declaration Statement
 ```
 Code: ingredient flour = 2 cups;
 
@@ -101,7 +147,7 @@ Draw lines connecting parent to children
 Label each node clearly
 ```
 
-#### B. Parse Tree 2: Mix Operation
+#### D. Parse Tree 4: Mix Operation
 ```
 Code: mix flour with sugar with butter;
 

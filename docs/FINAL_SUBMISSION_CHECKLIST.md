@@ -218,11 +218,13 @@ recipescript-compiler/
 4. ✅ `tests/test4.recipe` - Repeated steps (loops)
 5. ✅ `tests/test5.recipe` - Complex operations
 6. ✅ `tests/test6.recipe` - Different units
+7. ✅ `tests/test7_input_auto.recipe` - Input parameters & dynamic scaling (NEW!)
 
 **Additional Examples:**
-7. ✅ `examples/chocolate_cookies.recipe`
-8. ✅ `examples/pasta.recipe`
-9. ✅ `examples/bread.recipe`
+8. ✅ `examples/chocolate_cookies.recipe`
+9. ✅ `examples/pasta.recipe`
+10. ✅ `examples/bread.recipe`
+11. ✅ `examples/scalable_pasta.recipe` - Input parameters demo (NEW!)
 
 **Demonstration Commands:**
 ```bash

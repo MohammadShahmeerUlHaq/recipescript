@@ -1,12 +1,27 @@
 # Chocolate Chip Cookies Recipe
-# A delicious cookie recipe demonstrating RecipeScript
+# Scalable recipe with input parameters
 
-ingredient flour = 2 cups;
-ingredient sugar = 1 cups;
-ingredient butter = 0.5 cups;
-ingredient chocolate_chips = 1 cups;
-ingredient eggs = 2 cups;
+# Get number of servings (1 serving = 6 cookies)
+input servings;
+
+# Calculate ingredients per serving
+ingredient flour = 0.5 * servings cups;
+ingredient sugar = 0.25 * servings cups;
+ingredient butter = 0.125 * servings cups;
+ingredient chocolate_chips = 0.25 * servings cups;
+ingredient eggs = 0.5 * servings cups;
+
 temp oven = 350 F;
+
+# Display ingredients
+serve "=== Chocolate Chip Cookies ===";
+serve "Ingredients:";
+display flour;
+display sugar;
+display butter;
+display chocolate_chips;
+display eggs;
+serve "==============================";
 
 # Preheat the oven
 heat oven to 350 F;

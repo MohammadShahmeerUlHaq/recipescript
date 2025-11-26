@@ -76,6 +76,11 @@ class SemanticAnalyzer:
         for stmt in node.statements:
             self.visit(stmt)
     
+    def visit_InputStatement(self, node):
+        """Visit input statement"""
+        # Declare input variable as quantity type
+        self.symbol_table.declare(node.var_name, TokenType.QUANTITY)
+    
     def visit_Declaration(self, node):
         """Visit declaration node"""
         # Declare variable in symbol table
@@ -104,29 +109,43 @@ class SemanticAnalyzer:
         self.symbol_table.lookup(node.target)
         self.visit(node.temperature)
         
-        # Validate temperature range
+        # Validate temperature range (only for constant values)
         if isinstance(node.temperature, Value):
-            temp_val = float(node.temperature.number)
-            if node.temperature.unit == TokenType.FAHRENHEIT:
-                if temp_val < 0 or temp_val > 500:
-                    self.error(f"Temperature out of range: {temp_val}F (0-500F)")
-            elif node.temperature.unit == TokenType.CELSIUS:
-                if temp_val < 0 or temp_val > 260:
-                    self.error(f"Temperature out of range: {temp_val}C (0-260C)")
+            # Check if number is a simple value (not an expression)
+            if isinstance(node.temperature.number, str):
+                try:
+                    temp_val = float(node.temperature.number)
+                    if node.temperature.unit == TokenType.FAHRENHEIT:
+                        if temp_val < 0 or temp_val > 500:
+                            self.error(f"Temperature out of range: {temp_val}F (0-500F)")
+                    elif node.temperature.unit == TokenType.CELSIUS:
+                        if temp_val < 0 or temp_val > 260:
+                            self.error(f"Temperature out of range: {temp_val}C (0-260C)")
+                except ValueError:
+                    pass  # Skip validation for non-numeric values
     
     def visit_WaitOperation(self, node):
         """Visit wait operation"""
         self.visit(node.duration)
         
-        # Validate positive duration
+        # Validate positive duration (only for constant values)
         if isinstance(node.duration, Value):
-            duration_val = float(node.duration.number)
-            if duration_val < 0:
-                self.error(f"Duration must be positive: {duration_val}")
+            if isinstance(node.duration.number, str):
+                try:
+                    duration_val = float(node.duration.number)
+                    if duration_val < 0:
+                        self.error(f"Duration must be positive: {duration_val}")
+                except ValueError:
+                    pass  # Skip validation for non-numeric values
     
     def visit_ServeOperation(self, node):
         """Visit serve operation"""
         pass  # No semantic checks needed
+    
+    def visit_DisplayOperation(self, node):
+        """Visit display operation"""
+        # Check variable exists
+        self.symbol_table.lookup(node.variable)
     
     def visit_ScaleOperation(self, node):
         """Visit scale operation"""

@@ -47,10 +47,14 @@ class TACInstruction:
             return f"wait {self.arg1}"
         elif self.op == 'serve':
             return f"serve \"{self.arg1}\""
+        elif self.op == 'display':
+            return f"display {self.arg1}"
         elif self.op == 'scale':
             return f"scale {self.arg1} by {self.arg2}"
         elif self.op == 'add_ingredient':
             return f"add {self.arg1} to {self.arg2}"
+        elif self.op == 'input':
+            return f"input {self.result}"
         else:
             return f"{self.op} {self.arg1} {self.arg2} {self.result}"
 
@@ -98,6 +102,10 @@ class IntermediateCodeGenerator:
         for stmt in node.statements:
             self.visit(stmt)
     
+    def visit_InputStatement(self, node):
+        """Visit input statement"""
+        self.emit('input', None, None, node.var_name)
+    
     def visit_Declaration(self, node):
         """Visit declaration node"""
         value = self.visit(node.value)
@@ -125,6 +133,10 @@ class IntermediateCodeGenerator:
     def visit_ServeOperation(self, node):
         """Visit serve operation"""
         self.emit('serve', node.message)
+    
+    def visit_DisplayOperation(self, node):
+        """Visit display operation"""
+        self.emit('display', node.variable)
     
     def visit_ScaleOperation(self, node):
         """Visit scale operation"""
@@ -235,10 +247,22 @@ class IntermediateCodeGenerator:
     
     def visit_Value(self, node):
         """Visit value node"""
+        # Check if number is an AST node (expression) or a simple value
+        if hasattr(node.number, '__class__'):
+            class_name = node.number.__class__.__name__
+            if class_name in ['BinaryOp', 'Number', 'Identifier']:
+                # It's an expression, visit it
+                number_result = self.visit(node.number)
+            else:
+                # It's a simple string value
+                number_result = node.number
+        else:
+            number_result = node.number
+        
         if node.unit:
             unit_str = str(node.unit).split('.')[-1].lower()
-            return f"{node.number} {unit_str}"
-        return node.number
+            return f"{number_result} {unit_str}"
+        return number_result
     
     def display(self):
         """Display generated TAC"""

@@ -30,6 +30,11 @@ class CodeGenerator:
         """Execute single TAC instruction"""
         if instr.op == 'assign':
             value = self.get_value(instr.arg1)
+            # If assigning a temp variable value, resolve it
+            if isinstance(value, str) and value.startswith('t') and value[1:].isdigit():
+                # It's a temp variable reference, get its value
+                if value in self.variables:
+                    value = self.variables[value]
             self.variables[instr.result] = value
         
         elif instr.op == 'add':
@@ -135,6 +140,28 @@ class CodeGenerator:
             self.output.append(msg)
             print(msg)
         
+        elif instr.op == 'display':
+            # Display variable name and value
+            var_name = instr.arg1
+            if var_name in self.variables:
+                value = self.variables[var_name]
+                # Resolve any temp variable references in the value
+                if isinstance(value, str):
+                    parts = value.split()
+                    if len(parts) >= 2:
+                        # Check if first part is a temp variable
+                        if parts[0].startswith('t') and parts[0][1:].isdigit():
+                            if parts[0] in self.variables:
+                                resolved_val = self.variables[parts[0]]
+                                value = f"{resolved_val} {' '.join(parts[1:])}"
+                msg = f"{var_name}: {value}"
+                self.output.append(msg)
+                print(msg)
+            else:
+                msg = f"{var_name}: (not set)"
+                self.output.append(msg)
+                print(msg)
+        
         elif instr.op == 'scale':
             msg = f"Scaling {instr.arg1} by {instr.arg2}"
             self.output.append(msg)
@@ -165,6 +192,22 @@ class CodeGenerator:
             msg = f"Adding {instr.arg1} to {instr.arg2}"
             self.output.append(msg)
             print(msg)
+        
+        elif instr.op == 'input':
+            # Prompt user for input
+            try:
+                value = input(f"Enter value for {instr.result}: ")
+                # Try to convert to number
+                try:
+                    if '.' in value:
+                        self.variables[instr.result] = float(value)
+                    else:
+                        self.variables[instr.result] = int(value)
+                except ValueError:
+                    self.variables[instr.result] = value
+            except EOFError:
+                # For non-interactive mode, use default value
+                self.variables[instr.result] = 4  # Default servings
     
     def get_value(self, operand):
         """Get value of operand (variable or constant)"""

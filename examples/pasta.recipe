@@ -1,27 +1,42 @@
 # Simple Pasta Recipe
-# Quick and easy pasta with tomato sauce
+# Scalable recipe for any number of people
 
-ingredient pasta = 500 grams;
-ingredient water = 2 cups;
-ingredient tomato_sauce = 1 cups;
-ingredient salt = 1 tsp;
+# Get number of people to serve
+input people;
+
+# Calculate ingredients per person (100g pasta, 50ml sauce per person)
+ingredient pasta = 100 * people grams;
+ingredient water = 0.5 * people cups;
+ingredient tomato_sauce = 50 * people ml;
+ingredient salt = 0.25 * people tsp;
+
 temp stove = 212 F;
 time cook_time = 10 minutes;
 
+# Display ingredient list
+serve "=== Pasta Recipe ===";
+serve "Ingredients needed:";
+display pasta;
+display water;
+display tomato_sauce;
+display salt;
+serve "====================";
+
 # Boil water
+serve "Step 1: Boil water";
 heat stove to 212 F;
-serve "Heating water...";
 wait 5 minutes;
 
 # Add pasta
+serve "Step 2: Add pasta to boiling water";
 mix pasta with water;
 add salt to pasta;
 serve "Cooking pasta...";
 wait 10 minutes;
 
 # Add sauce
+serve "Step 3: Add tomato sauce";
 add tomato_sauce to pasta;
-serve "Adding sauce...";
 wait 2 minutes;
 
 serve "Pasta is ready to serve!";

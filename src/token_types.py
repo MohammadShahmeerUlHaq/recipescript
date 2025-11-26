@@ -20,6 +20,7 @@ class TokenType(Enum):
     SCALE = auto()
     ADD = auto()
     REMOVE = auto()
+    DISPLAY = auto()
     
     # Control flow
     REPEAT = auto()
@@ -29,6 +30,9 @@ class TokenType(Enum):
     ELSE = auto()
     TIMES = auto()
     IN = auto()
+    
+    # Input/Output
+    INPUT = auto()
     
     # Prepositions
     TO = auto()
@@ -116,6 +120,7 @@ KEYWORDS = {
     'scale': TokenType.SCALE,
     'add': TokenType.ADD,
     'remove': TokenType.REMOVE,
+    'display': TokenType.DISPLAY,
     'repeat': TokenType.REPEAT,
     'foreach': TokenType.FOREACH,
     'when': TokenType.WHEN,
@@ -123,6 +128,7 @@ KEYWORDS = {
     'else': TokenType.ELSE,
     'times': TokenType.TIMES,
     'in': TokenType.IN,
+    'input': TokenType.INPUT,
     'to': TokenType.TO,
     'with': TokenType.WITH,
     'for': TokenType.FOR,

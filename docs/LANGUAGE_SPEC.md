@@ -8,12 +8,15 @@ RecipeScript is a domain-specific language for cooking recipe automation. It pro
 
 ### 2.1 Keywords
 ```
-ingredient, time, temp, quantity, text
-mix, heat, wait, serve, scale, add, remove
-repeat, foreach, when, then, else
-to, with, for, at, from
-cups, tbsp, tsp, grams, ml, oz, lbs
-F, C, minutes, seconds, hours
+Data Types: ingredient, time, temp, quantity, text
+Operations: mix, heat, wait, serve, scale, add, remove
+Control Flow: repeat, foreach, when, then, else, times, in
+Input/Output: input
+Prepositions: to, with, for, at, from, by
+Units (Volume): cups, tbsp, tsp, ml, oz
+Units (Weight): grams, lbs
+Units (Temperature): F, C
+Units (Time): minutes, seconds, hours
 ```
 
 ### 2.2 Operators
@@ -80,18 +83,22 @@ Examples: flour, sugar, oven_temp, mix1
 <statement_list> ::= <statement>
                    | <statement> <statement_list>
 
-<statement> ::= <declaration> ";"
+<statement> ::= <input_stmt> ";"
+              | <declaration> ";"
               | <operation> ";"
               | <control_flow>
               | <comment>
+
+<input_stmt> ::= "input" <identifier>
 
 <declaration> ::= <type> <identifier> "=" <value>
 
 <type> ::= "ingredient" | "time" | "temp" | "quantity" | "text"
 
-<value> ::= <number> <unit>
-          | <number>
+<value> ::= <expression> <unit>
+          | <expression>
           | <text_literal>
+          | <identifier>
           | <identifier>
 
 <unit> ::= "cups" | "tbsp" | "tsp" | "grams" | "ml" | "oz" | "lbs"
@@ -102,6 +109,7 @@ Examples: flour, sugar, oven_temp, mix1
               | "heat" <identifier> "to" <value>
               | "wait" <time_value>
               | "serve" <text_literal>
+              | "display" <identifier>
               | "add" <identifier> "to" <identifier>
               | "scale" <identifier> "by" <number>
 
@@ -180,7 +188,22 @@ Examples: flour, sugar, oven_temp, mix1
 
 ## 5. Example Programs
 
-### Example 1: Simple Cookie Recipe
+### Example 1: Scalable Recipe with Input
+```recipe
+# Dynamic recipe that scales based on servings
+input servings;
+
+ingredient flour = 0.5 * servings cups;
+ingredient sugar = 0.25 * servings cups;
+temp oven = 350 F;
+
+heat oven to 350 F;
+mix flour with sugar;
+wait 15 minutes;
+serve "Cookies ready!";
+```
+
+### Example 2: Simple Cookie Recipe
 ```recipe
 ingredient flour = 2 cups;
 ingredient sugar = 1 cup;
