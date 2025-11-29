@@ -192,6 +192,7 @@ State q2 (ACCEPT - COMPLETE):
 ingredient, time, temp, quantity, text,
 mix, heat, wait, serve, display, add, scale, remove,
 repeat, foreach, when, then, else, times, in,
+recipe, return, returns,
 input, to, with, for, at, from, by,
 cups, tbsp, tsp, ml, oz, grams, lbs,
 F, C, minutes, seconds, hours

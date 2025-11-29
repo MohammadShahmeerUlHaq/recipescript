@@ -1,11 +1,16 @@
-# Test 4: Repeated Steps
-# Tests: Repeat control flow
+# Test 4: Repeated Steps with Recipe Function
+# Tests: Repeat control flow, recipe functions
 
-ingredient dough = 1 lbs;
-
-repeat 3 times {
-    mix dough;
-    wait 5 minutes;
+recipe knead_dough(ingredient dough, quantity count) {
+    repeat 3 times {
+        mix dough;
+        wait 5 minutes;
+    }
+    serve "Dough kneaded!";
 }
 
+ingredient dough = 1 lbs;
+quantity knead_count = 3;
+
+knead_dough(dough, knead_count);
 serve "Dough kneaded perfectly!";

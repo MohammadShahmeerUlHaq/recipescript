@@ -43,7 +43,7 @@ def compile_and_run(source_code, show_phases=True):
         parser = Parser(tokens)
         ast = parser.parse()
         if show_phases:
-            print(f"Successfully parsed {len(ast.statements)} statements")
+            print(f"Successfully parsed {len(ast.recipes)} recipes and {len(ast.statements)} statements")
             print("Abstract Syntax Tree (AST) built successfully")
         
         # Phase 3: Semantic Analysis

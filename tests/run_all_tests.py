@@ -21,6 +21,7 @@ def main():
         'test5.recipe',
         'test6.recipe',
         'test7_input_auto.recipe',
+        'test8_functions.recipe',
     ]
     
     print("=" * 60)

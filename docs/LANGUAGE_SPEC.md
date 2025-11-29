@@ -11,6 +11,7 @@ RecipeScript is a domain-specific language for cooking recipe automation. It pro
 Data Types: ingredient, time, temp, quantity, text
 Operations: mix, heat, wait, serve, scale, add, remove
 Control Flow: repeat, foreach, when, then, else, times, in
+Functions: recipe, return, returns
 Input/Output: input
 Prepositions: to, with, for, at, from, by
 Units (Volume): cups, tbsp, tsp, ml, oz
@@ -78,7 +79,20 @@ Examples: flour, sugar, oven_temp, mix1
 ## 3. Syntax Specification (BNF Grammar)
 
 ```bnf
-<program> ::= <statement_list>
+<program> ::= <recipe_list> <statement_list>
+
+<recipe_list> ::= <recipe_decl> <recipe_list>
+                | <recipe_decl>
+                | ε
+
+<recipe_decl> ::= "recipe" <identifier> "(" <param_list> ")" "{" <statement_list> "}"
+                | "recipe" <identifier> "(" <param_list> ")" "returns" <type> "{" <statement_list> "}"
+
+<param_list> ::= <parameter>
+               | <parameter> "," <param_list>
+               | ε
+
+<parameter> ::= <type> <identifier>
 
 <statement_list> ::= <statement>
                    | <statement> <statement_list>
@@ -87,7 +101,18 @@ Examples: flour, sugar, oven_temp, mix1
               | <declaration> ";"
               | <operation> ";"
               | <control_flow>
+              | <recipe_call> ";"
+              | <return_stmt> ";"
               | <comment>
+
+<recipe_call> ::= <identifier> "(" <arg_list> ")"
+
+<arg_list> ::= <expression>
+             | <expression> "," <arg_list>
+             | ε
+
+<return_stmt> ::= "return" <expression>
+                | "return"
 
 <input_stmt> ::= "input" <identifier>
 
@@ -249,6 +274,20 @@ repeat 3 times {
 serve "Dough kneaded";
 ```
 
+### Example 5: Recipe Functions
+```recipe
+recipe make_dough(ingredient flour, ingredient water) returns ingredient {
+    mix flour with water;
+    wait 30 minutes;
+    return flour;
+}
+
+ingredient flour = 2 cups;
+ingredient water = 1 cups;
+ingredient dough = make_dough(flour, water);
+serve "Dough ready!";
+```
+
 ## 6. Compiler Phases
 
 ### Phase 1: Lexical Analysis
@@ -305,12 +344,48 @@ serve "Dough kneaded";
 ## 8. File Extension
 - `.recipe` - RecipeScript source files
 
-## 9. Future Enhancements
-1. Recipe functions/procedures
-2. Ingredient substitution rules
-3. Nutritional calculation
-4. Multi-recipe meal planning
-5. Shopping list generation
-6. Timing optimization
-7. Recipe import/export
-8. Unit conversion automation
+## 9. Recipe Functions
+
+RecipeScript supports reusable recipe functions using the `recipe` keyword:
+
+### Function Declaration
+```recipe
+recipe make_dough(ingredient flour, ingredient water) returns ingredient {
+    mix flour with water;
+    return flour;
+}
+```
+
+### Function Call
+```recipe
+ingredient my_dough = make_dough(flour, water);
+```
+
+### Features:
+- Parameters with type declarations
+- Optional return type with `returns` keyword
+- Return statement to return values
+- Functions without return type act as procedures
+
+### Example:
+```recipe
+recipe double_quantity(quantity x) returns quantity {
+    quantity result = x * 2;
+    return result;
+}
+
+quantity servings = 4;
+quantity doubled = double_quantity(servings);
+display doubled;  # Shows: 8
+```
+
+## 10. Future Enhancements
+1. Ingredient substitution rules
+2. Nutritional calculation
+3. Multi-recipe meal planning
+4. Shopping list generation
+5. Timing optimization
+6. Recipe import/export
+7. Unit conversion automation
+8. Nested recipe calls
+9. Recipe overloading

@@ -1,5 +1,28 @@
-# Homemade Bread Recipe
+# Homemade Bread Recipe with Recipe Functions
 # Scalable bread recipe with kneading
+
+recipe mix_ingredients(ingredient flour, ingredient water, ingredient yeast, ingredient salt) returns ingredient {
+    mix flour with water;
+    add yeast to flour;
+    add salt to flour;
+    serve "Mixed all ingredients";
+    return flour;
+}
+
+recipe knead_dough(ingredient dough) {
+    repeat 5 times {
+        mix dough;
+        wait 2 minutes;
+    }
+    serve "Dough kneaded";
+}
+
+recipe bake_bread(ingredient dough, temp oven_temp) {
+    wait 10 minutes;
+    serve "Baking bread...";
+    wait 30 minutes;
+    serve "Fresh bread is ready!";
+}
 
 # Get number of loaves to make
 input loaves;
@@ -10,7 +33,7 @@ ingredient water = 1 * loaves cups;
 ingredient yeast = 2 * loaves tbsp;
 ingredient salt = 1 * loaves tsp;
 
-temp oven = 375 F;
+temp oven_temp = 375 F;
 
 # Display ingredients
 serve "=== Homemade Bread ===";
@@ -21,28 +44,15 @@ display yeast;
 display salt;
 serve "======================";
 
-# Mix ingredients
-mix flour with water;
-add yeast to flour;
-add salt to flour;
-serve "Mixed all ingredients";
+# Mix ingredients using recipe function
+ingredient dough = mix_ingredients(flour, water, yeast, salt);
 
-# Knead the dough (more kneading for more loaves)
-quantity knead_times = 3 + loaves;
-repeat 5 times {
-    mix flour;
-    wait 2 minutes;
-}
-serve "Dough kneaded";
+# Knead the dough
+knead_dough(dough);
 
 # Let it rise
 serve "Letting dough rise...";
 wait 60 minutes;
 
-# Bake
-heat oven to 375 F;
-wait 10 minutes;
-serve "Baking bread...";
-wait 30 minutes;
-
-serve "Fresh bread is ready!";
+# Bake using recipe function
+bake_bread(dough, oven_temp);

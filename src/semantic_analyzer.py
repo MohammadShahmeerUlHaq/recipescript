@@ -49,6 +49,8 @@ class SymbolTable:
 class SemanticAnalyzer:
     def __init__(self):
         self.symbol_table = SymbolTable()
+        self.recipe_table = {}  # Store recipe definitions
+        self.current_recipe = None  # Track current recipe being analyzed
         self.errors = []
     
     def error(self, msg):
@@ -73,6 +75,15 @@ class SemanticAnalyzer:
     
     def visit_Program(self, node):
         """Visit program node"""
+        # First pass: Register all recipes
+        for recipe in node.recipes:
+            self.register_recipe(recipe)
+        
+        # Second pass: Analyze recipe bodies
+        for recipe in node.recipes:
+            self.visit(recipe)
+        
+        # Third pass: Analyze main statements
         for stmt in node.statements:
             self.visit(stmt)
     
@@ -216,3 +227,71 @@ class SemanticAnalyzer:
     def visit_Value(self, node):
         """Visit value node"""
         pass
+    
+    def register_recipe(self, recipe):
+        """Register recipe in recipe table"""
+        if recipe.name in self.recipe_table:
+            self.error(f"Recipe '{recipe.name}' already defined")
+        
+        self.recipe_table[recipe.name] = {
+            'params': recipe.params,
+            'return_type': recipe.return_type,
+            'body': recipe.body
+        }
+    
+    def visit_RecipeDeclaration(self, node):
+        """Visit recipe declaration"""
+        self.current_recipe = node.name
+        
+        # Create new scope for recipe
+        self.symbol_table.enter_scope()
+        
+        # Add parameters to symbol table
+        for param in node.params:
+            self.symbol_table.declare(param['name'], param['type'])
+        
+        # Analyze recipe body
+        has_return = False
+        for stmt in node.body:
+            self.visit(stmt)
+            if isinstance(stmt, ReturnStatement):
+                has_return = True
+        
+        # Check if recipe with return type has return statement
+        if node.return_type and not has_return:
+            self.error(f"Recipe '{node.name}' must return a value")
+        
+        # Exit recipe scope
+        self.symbol_table.exit_scope()
+        self.current_recipe = None
+    
+    def visit_RecipeCall(self, node):
+        """Visit recipe call"""
+        # Check if recipe exists
+        if node.name not in self.recipe_table:
+            self.error(f"Undefined recipe '{node.name}'")
+            return
+        
+        recipe = self.recipe_table[node.name]
+        
+        # Check argument count
+        expected = len(recipe['params'])
+        actual = len(node.arguments)
+        
+        if expected != actual:
+            self.error(
+                f"Recipe '{node.name}' expects {expected} arguments, got {actual}"
+            )
+            return
+        
+        # Visit arguments
+        for arg in node.arguments:
+            self.visit(arg)
+    
+    def visit_ReturnStatement(self, node):
+        """Visit return statement"""
+        if not self.current_recipe:
+            self.error("Return statement outside recipe")
+        
+        if node.value:
+            self.visit(node.value)

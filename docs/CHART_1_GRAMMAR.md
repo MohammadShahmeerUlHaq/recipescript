@@ -7,10 +7,33 @@
 
 ### Program Structure
 ```
-<program> ::= <statement_list>
+<program> ::= <recipe_list> <statement_list>
+
+<recipe_list> ::= <recipe_decl> <recipe_list>
+                | <recipe_decl>
+                | ε
 
 <statement_list> ::= <statement>
                    | <statement> <statement_list>
+```
+
+### Recipe Functions
+```
+<recipe_decl> ::= "recipe" <identifier> "(" <param_list> ")" "{" <statement_list> "}"
+                | "recipe" <identifier> "(" <param_list> ")" "returns" <type> 
+                  "{" <statement_list> "}"
+
+<param_list> ::= <parameter>
+               | <parameter> "," <param_list>
+               | ε
+
+<parameter> ::= <type> <identifier>
+
+<recipe_call> ::= <identifier> "(" <arg_list> ")"
+
+<arg_list> ::= <expression>
+             | <expression> "," <arg_list>
+             | ε
 ```
 
 ### Statements
@@ -19,7 +42,12 @@
               | <declaration> ";"
               | <operation> ";"
               | <control_flow>
+              | <recipe_call> ";"
+              | <return_stmt> ";"
               | <comment>
+
+<return_stmt> ::= "return" <expression>
+                | "return"
 ```
 
 ### Input Statement
@@ -138,7 +166,7 @@ S = <program>
 Keywords: ingredient, time, temp, quantity, text, mix, heat, 
           wait, serve, display, add, scale, repeat, foreach, 
           when, then, else, times, in, input, to, with, for, 
-          at, from, by
+          at, from, by, recipe, return, returns
 
 Operators: =, +, -, *, /, ==, !=, >, <, >=, <=
 
@@ -154,24 +182,26 @@ Literals: NUMBER, IDENTIFIER, STRING
 
 ## NON-TERMINALS (N)
 ```
-<program>, <statement_list>, <statement>, <input_stmt>,
-<declaration>, <type>, <value>, <unit>, <operation>,
-<ingredient_list>, <control_flow>, <repeat_stmt>,
-<foreach_stmt>, <when_stmt>, <condition>, <comparison_op>,
-<expression>, <term>, <factor>, <number>, <identifier>,
-<text_literal>, <comment>, <time_value>
+<program>, <recipe_list>, <recipe_decl>, <param_list>, <parameter>,
+<statement_list>, <statement>, <input_stmt>, <declaration>, <type>, 
+<value>, <unit>, <operation>, <ingredient_list>, <control_flow>, 
+<repeat_stmt>, <foreach_stmt>, <when_stmt>, <condition>, 
+<comparison_op>, <expression>, <term>, <factor>, <number>, 
+<identifier>, <text_literal>, <comment>, <time_value>, 
+<recipe_call>, <arg_list>, <return_stmt>
 ```
 
 ---
 
-## EXAMPLE DERIVATION
+## EXAMPLE DERIVATION 1
 
 **Input:** `ingredient flour = 2 cups;`
 
 **Derivation:**
 ```
 <program>
-=> <statement_list>
+=> <recipe_list> <statement_list>
+=> ε <statement_list>
 => <statement>
 => <declaration> ";"
 => <type> <identifier> "=" <value> ";"
@@ -183,6 +213,26 @@ Literals: NUMBER, IDENTIFIER, STRING
 => "ingredient" "flour" "=" <number> <unit> ";"
 => "ingredient" "flour" "=" "2" <unit> ";"
 => "ingredient" "flour" "=" "2" "cups" ";"
+```
+
+## EXAMPLE DERIVATION 2 (Recipe Function)
+
+**Input:** `recipe make_dough(ingredient flour) { return flour; }`
+
+**Derivation:**
+```
+<program>
+=> <recipe_list> <statement_list>
+=> <recipe_decl> <statement_list>
+=> "recipe" <identifier> "(" <param_list> ")" "{" <statement_list> "}" <statement_list>
+=> "recipe" "make_dough" "(" <param_list> ")" "{" <statement_list> "}" ε
+=> "recipe" "make_dough" "(" <parameter> ")" "{" <statement_list> "}"
+=> "recipe" "make_dough" "(" <type> <identifier> ")" "{" <statement_list> "}"
+=> "recipe" "make_dough" "(" "ingredient" "flour" ")" "{" <statement_list> "}"
+=> "recipe" "make_dough" "(" "ingredient" "flour" ")" "{" <statement> "}"
+=> "recipe" "make_dough" "(" "ingredient" "flour" ")" "{" <return_stmt> ";" "}"
+=> "recipe" "make_dough" "(" "ingredient" "flour" ")" "{" "return" <expression> ";" "}"
+=> "recipe" "make_dough" "(" "ingredient" "flour" ")" "{" "return" "flour" ";" "}"
 ```
 
 ---

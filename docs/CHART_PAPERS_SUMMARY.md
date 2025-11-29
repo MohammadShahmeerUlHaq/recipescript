@@ -60,13 +60,13 @@ I've created **7 comprehensive chart paper documents** + 1 guide for your compil
 
 ## 📋 WHAT YOUR PROFESSOR ASKED FOR
 
-✅ **Grammar** - Chart 1 has complete BNF grammar
+✅ **Grammar** - Chart 1 has complete BNF grammar (including recipe functions!)
 ✅ **Lexer (DFA)** - Chart 2 has 6 different DFAs with diagrams
-✅ **Symbol Table (STM)** - Chart 3 has complete symbol table management
-✅ **Top-Down Parser** - Chart 4 has recursive descent parsing
+✅ **Symbol Table (STM)** - Chart 3 has complete symbol table management (with recipe table!)
+✅ **Top-Down Parser** - Chart 4 has recursive descent parsing (with function support!)
 ✅ **Bottom-Up Parser** - Chart 5 has shift-reduce/LR parsing
 
-**EVERYTHING IS COVERED!** ✨
+**EVERYTHING IS COVERED + BONUS RECIPE FUNCTIONS!** ✨
 
 ---
 
@@ -124,12 +124,13 @@ It contains:
 ## 🎓 SUMMARY
 
 **You now have:**
-- ✅ Complete, working compiler (1,900+ lines)
-- ✅ 7 test cases (100% passing)
-- ✅ Comprehensive documentation (12 files)
+- ✅ Complete, working compiler (2,100+ lines)
+- ✅ 8 test cases (100% passing) - including recipe functions!
+- ✅ 4 example recipes (including pizza with functions!)
+- ✅ Comprehensive documentation (12+ files)
 - ✅ 7 chart paper documents ready to copy
-- ✅ Complete language specification
-- ✅ All compiler phases implemented
+- ✅ Complete language specification with recipe functions
+- ✅ All compiler phases implemented + function support
 
 **What you need to do:**
 - 📝 Copy these documents onto physical chart papers

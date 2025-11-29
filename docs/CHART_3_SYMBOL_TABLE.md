@@ -5,7 +5,7 @@
 
 ## SYMBOL TABLE STRUCTURE
 
-### Entry Format
+### Variable Entry Format
 ```
 ┌──────────────┬──────────┬──────────┬──────────┬──────────┬──────────┐
 │ Name         │ Type     │ Value    │ Unit     │ Scope    │ Line No  │
@@ -18,15 +18,35 @@
 └──────────────┴──────────┴──────────┴──────────┴──────────┴──────────┘
 ```
 
+### Recipe Entry Format
+```
+┌──────────────┬──────────────────────┬──────────────┬──────────┐
+│ Name         │ Parameters           │ Return Type  │ Line No  │
+├──────────────┼──────────────────────┼──────────────┼──────────┤
+│ make_dough   │ (ingredient, ingr.)  │ ingredient   │ 1        │
+│ double_qty   │ (quantity)           │ quantity     │ 5        │
+│ bake_pizza   │ (ingr., ingr., temp) │ -            │ 10       │
+└──────────────┴──────────────────────┴──────────────┴──────────┘
+```
+
 ### Attributes Stored
+
+**For Variables:**
 1. **Name** - Identifier string
 2. **Type** - ingredient, time, temp, quantity, text
 3. **Value** - Current value (if known at compile time)
 4. **Unit** - cups, grams, F, minutes, etc.
-5. **Scope** - global, block_1, block_2, etc.
+5. **Scope** - global, block_1, block_2, recipe_1, etc.
 6. **Line Number** - Declaration location
 7. **Is Initialized** - Boolean flag
 8. **Is Used** - Boolean flag (for optimization)
+
+**For Recipes:**
+1. **Name** - Recipe identifier
+2. **Parameters** - List of (type, name) pairs
+3. **Return Type** - Return type or None
+4. **Line Number** - Declaration location
+5. **Body** - AST of recipe body
 
 ---
 
@@ -162,6 +182,50 @@ REPEAT BLOCK (Level 2):
 - `temp` can access: temp (local), extra (parent), flour (global)
 - `extra` can access: extra (local), flour (global)
 - `flour` can access: flour (local/global only)
+
+---
+
+## EXAMPLE 4: RECIPE FUNCTIONS
+
+### Source Code:
+```recipe
+recipe make_dough(ingredient flour, ingredient water) returns ingredient {
+    mix flour with water;
+    return flour;
+}
+
+ingredient flour = 2 cups;
+ingredient water = 1 cups;
+ingredient dough = make_dough(flour, water);
+```
+
+### Symbol Table Structure:
+```
+RECIPE TABLE:
+┌──────────────┬──────────────────────┬──────────────┬──────────┐
+│ make_dough   │ (ingredient flour,   │ ingredient   │ Line 1   │
+│              │  ingredient water)   │              │          │
+└──────────────┴──────────────────────┴──────────────┴──────────┘
+
+GLOBAL SCOPE (Level 0):
+┌──────────┬──────────┬──────────┬──────────┬──────────┐
+│ flour    │ingredient│ 2.0      │ cups     │ Line 6   │
+│ water    │ingredient│ 1.0      │ cups     │ Line 7   │
+│ dough    │ingredient│ result   │ -        │ Line 8   │
+└──────────┴──────────┴──────────┴──────────┴──────────┘
+
+RECIPE SCOPE (make_dough):
+┌──────────┬──────────┬──────────┬──────────┬──────────┐
+│ flour    │ingredient│ param    │ -        │ Line 1   │
+│ water    │ingredient│ param    │ -        │ Line 1   │
+└──────────┴──────────┴──────────┴──────────┴──────────┘
+```
+
+**Scope Rules for Recipes:**
+- Recipe parameters are in recipe scope
+- Recipe body can access parameters and global variables
+- Recipe calls pass arguments by value
+- Return statement exits recipe and returns value
 
 ---
 

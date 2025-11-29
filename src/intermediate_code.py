@@ -55,6 +55,18 @@ class TACInstruction:
             return f"add {self.arg1} to {self.arg2}"
         elif self.op == 'input':
             return f"input {self.result}"
+        elif self.op == 'begin_recipe':
+            return f"RECIPE {self.result}:"
+        elif self.op == 'end_recipe':
+            return f"END_RECIPE {self.result}"
+        elif self.op == 'param':
+            return f"PARAM {self.arg1}"
+        elif self.op == 'call':
+            return f"{self.result} = CALL {self.arg1}, {self.arg2}"
+        elif self.op == 'return':
+            if self.arg1:
+                return f"RETURN {self.arg1}"
+            return "RETURN"
         else:
             return f"{self.op} {self.arg1} {self.arg2} {self.result}"
 
@@ -99,6 +111,11 @@ class IntermediateCodeGenerator:
     
     def visit_Program(self, node):
         """Visit program node"""
+        # Generate code for recipes first
+        for recipe in node.recipes:
+            self.visit(recipe)
+        
+        # Then generate code for main statements
         for stmt in node.statements:
             self.visit(stmt)
     
@@ -263,6 +280,36 @@ class IntermediateCodeGenerator:
             unit_str = str(node.unit).split('.')[-1].lower()
             return f"{number_result} {unit_str}"
         return number_result
+    
+    def visit_RecipeDeclaration(self, node):
+        """Visit recipe declaration"""
+        self.emit('begin_recipe', None, None, node.name)
+        
+        # Generate code for body
+        for stmt in node.body:
+            self.visit(stmt)
+        
+        self.emit('end_recipe', None, None, node.name)
+    
+    def visit_RecipeCall(self, node):
+        """Visit recipe call"""
+        # Evaluate and push arguments
+        for arg in node.arguments:
+            arg_result = self.visit(arg)
+            self.emit('param', arg_result)
+        
+        # Call recipe
+        result = self.new_temp()
+        self.emit('call', node.name, len(node.arguments), result)
+        return result
+    
+    def visit_ReturnStatement(self, node):
+        """Visit return statement"""
+        if node.value:
+            value = self.visit(node.value)
+            self.emit('return', value)
+        else:
+            self.emit('return', None)
     
     def display(self):
         """Display generated TAC"""

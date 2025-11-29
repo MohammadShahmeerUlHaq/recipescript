@@ -1,0 +1,36 @@
+# Pizza Recipe with Functions
+# Demonstrates recipe-style functions
+
+recipe make_dough(ingredient flour, ingredient water, ingredient yeast) returns ingredient {
+    mix flour with water with yeast;
+    wait 30 minutes;
+    return flour;
+}
+
+recipe make_sauce(ingredient tomatoes, temp heat_level) returns ingredient {
+    heat tomatoes to heat_level;
+    wait 15 minutes;
+    return tomatoes;
+}
+
+recipe bake_pizza(ingredient dough, ingredient sauce, temp oven_temp) {
+    mix dough with sauce;
+    wait 20 minutes;
+    serve "Pizza is ready!";
+}
+
+# Main program
+ingredient flour = 3 cups;
+ingredient water = 1 cups;
+ingredient yeast = 2 tbsp;
+ingredient tomatoes = 2 cups;
+
+temp sauce_heat = 300 F;
+temp oven_temp = 450 F;
+
+# Make components
+ingredient pizza_dough = make_dough(flour, water, yeast);
+ingredient pizza_sauce = make_sauce(tomatoes, sauce_heat);
+
+# Bake the pizza
+bake_pizza(pizza_dough, pizza_sauce, oven_temp);

@@ -83,6 +83,20 @@ return x
 return
 ```
 
+### 10. Recipe Declaration
+```
+RECIPE recipe_name:
+...
+END_RECIPE recipe_name
+```
+
+### 11. Recipe Call
+```
+PARAM arg1
+PARAM arg2
+result = CALL recipe_name, arg_count
+```
+
 ---
 
 ## EXAMPLE 1: SIMPLE DECLARATION
@@ -387,6 +401,82 @@ goto L1
 
 L4:
 # End outer loop
+```
+
+---
+
+## EXAMPLE 11: RECIPE FUNCTION DECLARATION
+
+**Source Code:**
+```recipe
+recipe make_dough(ingredient flour, ingredient water) returns ingredient {
+    mix flour with water;
+    return flour;
+}
+```
+
+**Three Address Code:**
+```
+RECIPE make_dough:
+    mix flour, water
+    RETURN flour
+END_RECIPE make_dough
+```
+
+---
+
+## EXAMPLE 12: RECIPE FUNCTION CALL
+
+**Source Code:**
+```recipe
+ingredient flour = 2 cups;
+ingredient water = 1 cups;
+ingredient dough = make_dough(flour, water);
+```
+
+**Three Address Code:**
+```
+flour = 2 cups
+water = 1 cups
+
+# Push arguments
+PARAM flour
+PARAM water
+
+# Call recipe
+t1 = CALL make_dough, 2
+
+# Store result
+dough = t1
+```
+
+---
+
+## EXAMPLE 13: RECIPE WITH CALCULATION
+
+**Source Code:**
+```recipe
+recipe double_quantity(quantity x) returns quantity {
+    quantity result = x * 2;
+    return result;
+}
+
+quantity servings = 4;
+quantity doubled = double_quantity(servings);
+```
+
+**Three Address Code:**
+```
+RECIPE double_quantity:
+    t0 = x * 2
+    result = t0
+    RETURN result
+END_RECIPE double_quantity
+
+servings = 4
+PARAM servings
+t1 = CALL double_quantity, 1
+doubled = t1
 ```
 
 ---

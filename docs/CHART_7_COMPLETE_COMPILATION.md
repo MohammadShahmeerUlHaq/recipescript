@@ -509,13 +509,102 @@ n = number of source code tokens/statements
 │ Token List           │ O(n)            │
 │ Parse Tree           │ O(n)            │
 │ Symbol Table         │ O(v)            │
+│ Recipe Table         │ O(r)            │
 │ TAC Instructions     │ O(n)            │
 │ CFG                  │ O(n)            │
 ├──────────────────────┼─────────────────┤
-│ Total                │ O(n + v)        │
+│ Total                │ O(n + v + r)    │
 └──────────────────────┴─────────────────┘
 
-n = tokens, v = variables
+n = tokens, v = variables, r = recipes
+```
+
+---
+
+## RECIPE FUNCTION EXAMPLE
+
+**Source Code:**
+```recipe
+recipe double_quantity(quantity x) returns quantity {
+    quantity result = x * 2;
+    return result;
+}
+
+quantity servings = 4;
+quantity doubled = double_quantity(servings);
+display doubled;
+```
+
+### PHASE 1: Tokens
+```
+recipe, double_quantity, (, quantity, x, ), returns, quantity, {,
+quantity, result, =, x, *, 2, ;, return, result, ;, },
+quantity, servings, =, 4, ;,
+quantity, doubled, =, double_quantity, (, servings, ), ;,
+display, doubled, ;
+```
+
+### PHASE 2: AST
+```
+Program
+├── Recipes
+│   └── RecipeDeclaration(double_quantity)
+│       ├── Params: [(quantity, x)]
+│       ├── Returns: quantity
+│       └── Body:
+│           ├── Declaration(quantity, result, x * 2)
+│           └── Return(result)
+└── Statements
+    ├── Declaration(quantity, servings, 4)
+    ├── Declaration(quantity, doubled, double_quantity(servings))
+    └── Display(doubled)
+```
+
+### PHASE 3: Symbol Table
+```
+RECIPE TABLE:
+┌──────────────────┬──────────────┬──────────────┐
+│ double_quantity  │ (quantity x) │ quantity     │
+└──────────────────┴──────────────┴──────────────┘
+
+VARIABLE TABLE:
+┌──────────┬──────────┬──────────┐
+│ servings │ quantity │ 4        │
+│ doubled  │ quantity │ computed │
+└──────────┴──────────┴──────────┘
+```
+
+### PHASE 4: TAC
+```
+RECIPE double_quantity:
+    t0 = x * 2
+    result = t0
+    RETURN result
+END_RECIPE double_quantity
+
+servings = 4
+PARAM servings
+t1 = CALL double_quantity, 1
+doubled = t1
+display doubled
+```
+
+### PHASE 5: Optimized TAC
+```
+RECIPE double_quantity:
+    result = x * 2
+    RETURN result
+END_RECIPE double_quantity
+
+servings = 4
+PARAM servings
+doubled = CALL double_quantity, 1
+display doubled
+```
+
+### PHASE 6: Execution Output
+```
+doubled: 8
 ```
 
 ---

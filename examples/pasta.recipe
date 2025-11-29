@@ -1,5 +1,27 @@
-# Simple Pasta Recipe
+# Simple Pasta Recipe with Recipe Functions
 # Scalable recipe for any number of people
+
+recipe boil_water(temp stove_temp) {
+    serve "Step 1: Boil water";
+    heat stove to stove_temp;
+    wait 5 minutes;
+}
+
+recipe cook_pasta(ingredient pasta, ingredient water, ingredient salt) returns ingredient {
+    serve "Step 2: Add pasta to boiling water";
+    mix pasta with water;
+    add salt to pasta;
+    serve "Cooking pasta...";
+    wait 10 minutes;
+    return pasta;
+}
+
+recipe add_sauce(ingredient pasta, ingredient sauce) {
+    serve "Step 3: Add tomato sauce";
+    add sauce to pasta;
+    wait 2 minutes;
+    serve "Pasta is ready to serve!";
+}
 
 # Get number of people to serve
 input people;
@@ -22,21 +44,11 @@ display tomato_sauce;
 display salt;
 serve "====================";
 
-# Boil water
-serve "Step 1: Boil water";
-heat stove to 212 F;
-wait 5 minutes;
+# Boil water using recipe function
+boil_water(stove);
 
-# Add pasta
-serve "Step 2: Add pasta to boiling water";
-mix pasta with water;
-add salt to pasta;
-serve "Cooking pasta...";
-wait 10 minutes;
+# Cook pasta using recipe function
+ingredient cooked_pasta = cook_pasta(pasta, water, salt);
 
-# Add sauce
-serve "Step 3: Add tomato sauce";
-add tomato_sauce to pasta;
-wait 2 minutes;
-
-serve "Pasta is ready to serve!";
+# Add sauce using recipe function
+add_sauce(cooked_pasta, tomato_sauce);

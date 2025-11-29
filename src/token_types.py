@@ -31,6 +31,11 @@ class TokenType(Enum):
     TIMES = auto()
     IN = auto()
     
+    # Functions
+    RECIPE = auto()
+    RETURN = auto()
+    RETURNS = auto()
+    
     # Input/Output
     INPUT = auto()
     
@@ -128,6 +133,9 @@ KEYWORDS = {
     'else': TokenType.ELSE,
     'times': TokenType.TIMES,
     'in': TokenType.IN,
+    'recipe': TokenType.RECIPE,
+    'return': TokenType.RETURN,
+    'returns': TokenType.RETURNS,
     'input': TokenType.INPUT,
     'to': TokenType.TO,
     'with': TokenType.WITH,

@@ -1,5 +1,32 @@
-# Chocolate Chip Cookies Recipe
+# Chocolate Chip Cookies Recipe with Recipe Functions
 # Scalable recipe with input parameters
+
+recipe preheat_oven(temp oven_temp) {
+    heat oven to oven_temp;
+    serve "Preheating oven...";
+    wait 10 minutes;
+}
+
+recipe mix_dry_ingredients(ingredient flour, ingredient sugar) returns ingredient {
+    mix flour with sugar;
+    serve "Mixed dry ingredients";
+    return flour;
+}
+
+recipe add_wet_ingredients(ingredient mixture, ingredient butter, ingredient eggs) returns ingredient {
+    mix mixture with butter;
+    add eggs to mixture;
+    serve "Added wet ingredients";
+    return mixture;
+}
+
+recipe bake_cookies(ingredient dough, ingredient chips) {
+    add chips to dough;
+    serve "Added chocolate chips";
+    serve "Baking cookies...";
+    wait 15 minutes;
+    serve "Chocolate chip cookies are ready! Enjoy!";
+}
 
 # Get number of servings (1 serving = 6 cookies)
 input servings;
@@ -23,26 +50,14 @@ display chocolate_chips;
 display eggs;
 serve "==============================";
 
-# Preheat the oven
-heat oven to 350 F;
-serve "Preheating oven...";
-wait 10 minutes;
+# Preheat the oven using recipe function
+preheat_oven(oven);
 
-# Mix dry ingredients
-mix flour with sugar;
-serve "Mixed dry ingredients";
+# Mix dry ingredients using recipe function
+ingredient dry_mix = mix_dry_ingredients(flour, sugar);
 
-# Add wet ingredients
-mix flour with butter;
-add eggs to flour;
-serve "Added wet ingredients";
+# Add wet ingredients using recipe function
+ingredient dough = add_wet_ingredients(dry_mix, butter, eggs);
 
-# Add chocolate chips
-add chocolate_chips to flour;
-serve "Added chocolate chips";
-
-# Bake
-serve "Baking cookies...";
-wait 15 minutes;
-
-serve "Chocolate chip cookies are ready! Enjoy!";
+# Bake using recipe function
+bake_cookies(dough, chocolate_chips);

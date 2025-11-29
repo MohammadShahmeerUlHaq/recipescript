@@ -10,7 +10,8 @@ class ASTNode:
     pass
 
 class Program(ASTNode):
-    def __init__(self, statements):
+    def __init__(self, recipes, statements):
+        self.recipes = recipes
         self.statements = statements
 
 class Declaration(ASTNode):
@@ -93,6 +94,22 @@ class InputStatement(ASTNode):
     def __init__(self, var_name):
         self.var_name = var_name
 
+class RecipeDeclaration(ASTNode):
+    def __init__(self, name, params, return_type, body):
+        self.name = name
+        self.params = params
+        self.return_type = return_type
+        self.body = body
+
+class RecipeCall(ASTNode):
+    def __init__(self, name, arguments):
+        self.name = name
+        self.arguments = arguments
+
+class ReturnStatement(ASTNode):
+    def __init__(self, value=None):
+        self.value = value
+
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
@@ -122,17 +139,31 @@ class Parser:
     
     def parse(self):
         """Parse entire program"""
+        recipes = []
         statements = []
+        
+        # Parse recipe declarations first
+        while self.current_token and self.current_token.type == TokenType.RECIPE:
+            recipe = self.parse_recipe_declaration()
+            if recipe:
+                recipes.append(recipe)
+        
+        # Parse main statements
         while self.current_token and self.current_token.type != TokenType.EOF:
             stmt = self.parse_statement()
             if stmt:
                 statements.append(stmt)
-        return Program(statements)
+        
+        return Program(recipes, statements)
     
     def parse_statement(self):
         """Parse a single statement"""
         if not self.current_token or self.current_token.type == TokenType.EOF:
             return None
+        
+        # Return statement
+        if self.current_token.type == TokenType.RETURN:
+            return self.parse_return()
         
         # Input statement
         if self.current_token.type == TokenType.INPUT:
@@ -165,8 +196,11 @@ class Parser:
         if self.current_token.type == TokenType.WHEN:
             return self.parse_when()
         
-        # Assignment
+        # Assignment or recipe call
         if self.current_token.type == TokenType.IDENTIFIER:
+            # Look ahead to check if it's a recipe call
+            if self.pos + 1 < len(self.tokens) and self.tokens[self.pos + 1].type == TokenType.LPAREN:
+                return self.parse_recipe_call_statement()
             return self.parse_assignment()
         
         self.error(f"Unexpected token: {self.current_token.type}")
@@ -367,13 +401,16 @@ class Parser:
         return left
     
     def parse_factor(self):
-        """Parse factor (number, identifier, or parenthesized expression)"""
+        """Parse factor (number, identifier, recipe call, or parenthesized expression)"""
         if self.current_token.type == TokenType.NUMBER:
             value = self.current_token.value
             self.advance()
             return Number(value)
         
         if self.current_token.type == TokenType.IDENTIFIER:
+            # Check if it's a recipe call
+            if self.pos + 1 < len(self.tokens) and self.tokens[self.pos + 1].type == TokenType.LPAREN:
+                return self.parse_recipe_call()
             name = self.current_token.value
             self.advance()
             return Identifier(name)
@@ -385,3 +422,82 @@ class Parser:
             return expr
         
         self.error(f"Unexpected token in expression: {self.current_token.type}")
+    
+    def parse_recipe_declaration(self):
+        """Parse recipe declaration"""
+        self.expect(TokenType.RECIPE)
+        name = self.expect(TokenType.IDENTIFIER).value
+        self.expect(TokenType.LPAREN)
+        
+        # Parse parameters
+        params = []
+        if self.current_token.type != TokenType.RPAREN:
+            while True:
+                param_type = self.current_token.type
+                if param_type not in [TokenType.INGREDIENT, TokenType.TIME, 
+                                     TokenType.TEMP, TokenType.QUANTITY, TokenType.TEXT]:
+                    self.error(f"Expected type in parameter, got {param_type}")
+                self.advance()
+                param_name = self.expect(TokenType.IDENTIFIER).value
+                params.append({'type': param_type, 'name': param_name})
+                
+                if self.current_token.type != TokenType.COMMA:
+                    break
+                self.advance()
+        
+        self.expect(TokenType.RPAREN)
+        
+        # Optional return type
+        return_type = None
+        if self.current_token and self.current_token.type == TokenType.RETURNS:
+            self.advance()
+            return_type = self.current_token.type
+            if return_type not in [TokenType.INGREDIENT, TokenType.TIME, 
+                                  TokenType.TEMP, TokenType.QUANTITY, TokenType.TEXT]:
+                self.error(f"Expected type after 'returns', got {return_type}")
+            self.advance()
+        
+        # Parse body
+        self.expect(TokenType.LBRACE)
+        body = []
+        while self.current_token and self.current_token.type != TokenType.RBRACE:
+            stmt = self.parse_statement()
+            if stmt:
+                body.append(stmt)
+        self.expect(TokenType.RBRACE)
+        
+        return RecipeDeclaration(name, params, return_type, body)
+    
+    def parse_recipe_call(self):
+        """Parse recipe call (as expression)"""
+        name = self.expect(TokenType.IDENTIFIER).value
+        self.expect(TokenType.LPAREN)
+        
+        # Parse arguments
+        arguments = []
+        if self.current_token.type != TokenType.RPAREN:
+            while True:
+                arguments.append(self.parse_expression())
+                if self.current_token.type != TokenType.COMMA:
+                    break
+                self.advance()
+        
+        self.expect(TokenType.RPAREN)
+        return RecipeCall(name, arguments)
+    
+    def parse_recipe_call_statement(self):
+        """Parse recipe call as statement"""
+        call = self.parse_recipe_call()
+        self.expect(TokenType.SEMICOLON)
+        return call
+    
+    def parse_return(self):
+        """Parse return statement"""
+        self.expect(TokenType.RETURN)
+        
+        value = None
+        if self.current_token.type != TokenType.SEMICOLON:
+            value = self.parse_expression()
+        
+        self.expect(TokenType.SEMICOLON)
+        return ReturnStatement(value)

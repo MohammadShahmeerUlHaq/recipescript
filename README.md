@@ -2,7 +2,7 @@
 
 A domain-specific language (DSL) compiler for cooking recipe automation and meal planning.
 
-**Status: ✅ COMPLETE AND TESTED - All 6 Tests Passing**
+**Status: ✅ COMPLETE AND TESTED - All 8 Tests Passing (Including Recipe Functions!)**
 
 ---
 
@@ -31,7 +31,7 @@ python recipescript.py tests/test1.recipe
 cd tests
 python run_all_tests.py
 ```
-**Result: ✅ 6/6 tests passing**
+**Result: ✅ 8/8 tests passing (including recipe functions!)**
 
 ### Interactive Mode
 ```bash
@@ -46,6 +46,7 @@ python recipescript.py
 python recipescript.py examples/chocolate_cookies.recipe
 python recipescript.py examples/pasta.recipe
 python recipescript.py examples/bread.recipe
+python recipescript.py examples/pizza.recipe  # NEW: With recipe functions!
 ```
 
 ---
@@ -61,11 +62,25 @@ quantity servings = 4;          # Numeric quantities
 text message = "Ready!";        # Text strings
 ```
 
-### Input Parameters (NEW!)
+### Input Parameters
 ```recipe
 input servings;                     # Get user input
 ingredient flour = 0.5 * servings cups;  # Dynamic calculation
 serve "Recipe for servings people!";     # Scalable recipes
+```
+
+### Recipe Functions (NEW!)
+```recipe
+recipe make_dough(ingredient flour, ingredient water) returns ingredient {
+    mix flour with water;
+    wait 30 minutes;
+    return flour;
+}
+
+ingredient flour = 2 cups;
+ingredient water = 1 cups;
+ingredient dough = make_dough(flour, water);  # Call recipe function
+serve "Dough ready!";
 ```
 
 ### Operations
@@ -76,6 +91,7 @@ wait 15 minutes;                    # Timing control
 serve "Cookies ready!";             # Output message
 scale flour by 2;                   # Adjust quantities
 add sugar to flour;                 # Add ingredient
+display servings;                   # Show variable value
 ```
 
 ### Control Flow

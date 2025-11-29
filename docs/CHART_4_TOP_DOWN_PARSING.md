@@ -18,19 +18,28 @@
 
 ### FIRST Sets
 ```
-FIRST(<program>) = {input, ingredient, time, temp, quantity, 
+FIRST(<program>) = {recipe, input, ingredient, time, temp, quantity, 
                     text, mix, heat, wait, serve, display, 
-                    add, scale, repeat, foreach, when, #}
+                    add, scale, repeat, foreach, when, #, ε}
+
+FIRST(<recipe_list>) = {recipe, ε}
+
+FIRST(<recipe_decl>) = {recipe}
 
 FIRST(<statement>) = {input, ingredient, time, temp, quantity, 
                       text, mix, heat, wait, serve, display, 
-                      add, scale, repeat, foreach, when, #}
+                      add, scale, repeat, foreach, when, return,
+                      IDENTIFIER, #}
 
 FIRST(<declaration>) = {ingredient, time, temp, quantity, text}
 
 FIRST(<operation>) = {mix, heat, wait, serve, display, add, scale}
 
 FIRST(<control_flow>) = {repeat, foreach, when}
+
+FIRST(<recipe_call>) = {IDENTIFIER}
+
+FIRST(<return_stmt>) = {return}
 
 FIRST(<expression>) = {NUMBER, IDENTIFIER, (}
 
@@ -95,11 +104,58 @@ Production Rules:
 ### Main Parser Function
 ```
 parse_program():
-    return parse_statement_list()
+    recipes = []
+    statements = []
+    
+    # Parse recipe declarations first
+    while current_token == 'recipe':
+        recipe = parse_recipe_declaration()
+        recipes.append(recipe)
+    
+    # Parse main statements
+    while current_token != EOF:
+        stmt = parse_statement()
+        statements.append(stmt)
+    
+    return Program(recipes, statements)
+
+parse_recipe_declaration():
+    match('recipe')
+    name = match(IDENTIFIER)
+    match('(')
+    params = parse_parameter_list()
+    match(')')
+    
+    return_type = None
+    if current_token == 'returns':
+        match('returns')
+        return_type = match_type()
+    
+    match('{')
+    body = parse_statement_list_until('}')
+    match('}')
+    
+    return RecipeDeclaration(name, params, return_type, body)
+
+parse_parameter_list():
+    params = []
+    if current_token == ')':
+        return params  # Empty list
+    
+    while True:
+        param_type = match_type()
+        param_name = match(IDENTIFIER)
+        params.append((param_type, param_name))
+        
+        if current_token != ',':
+            break
+        match(',')
+    
+    return params
 
 parse_statement_list():
     statements = []
-    while current_token != EOF:
+    while current_token != EOF and current_token != '}':
         stmt = parse_statement()
         statements.append(stmt)
     return statements
@@ -271,6 +327,42 @@ parse_condition():
     return ConditionNode(op, left, right)
 ```
 
+### Recipe Call and Return Parser
+```
+parse_recipe_call():
+    # Called when we see IDENTIFIER followed by '('
+    name = match(IDENTIFIER)
+    match('(')
+    args = parse_argument_list()
+    match(')')
+    return RecipeCallNode(name, args)
+
+parse_argument_list():
+    args = []
+    if current_token == ')':
+        return args  # Empty list
+    
+    while True:
+        arg = parse_expression()
+        args.append(arg)
+        
+        if current_token != ',':
+            break
+        match(',')
+    
+    return args
+
+parse_return():
+    match('return')
+    
+    value = None
+    if current_token != ';':
+        value = parse_expression()
+    
+    match(';')
+    return ReturnNode(value)
+```
+
 ---
 
 ## PARSE TREE EXAMPLE 1
@@ -356,6 +448,35 @@ parse_condition():
                                   3
 
 Result: 2 + (3 * 4) = 14  [Correct precedence!]
+```
+
+---
+
+## PARSE TREE EXAMPLE 4 (Recipe Function)
+
+**Input:** `recipe double(quantity x) returns quantity { return x * 2; }`
+
+**Parse Tree:**
+```
+                        <program>
+                       /        \
+                <recipe_list>  <statement_list>
+                      |              |
+                <recipe_decl>        ε
+                /    |    |    \
+            recipe  <id> <params> <body>
+                     |      |       |
+                  double <param> <stmts>
+                           |       |
+                      (quantity x) <return>
+                                    |
+                                  return <expr>
+                                         /  |  \
+                                      <term> * <factor>
+                                        |        |
+                                     <factor>    2
+                                        |
+                                        x
 ```
 
 ---
