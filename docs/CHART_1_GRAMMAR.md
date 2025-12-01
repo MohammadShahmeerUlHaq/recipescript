@@ -1,11 +1,9 @@
-# CHART PAPER 1: COMPLETE GRAMMAR (BNF)
-## RecipeScript Language - Context-Free Grammar
+## RecipeScript - Context-Free Grammar
 
----
 
 ## PRODUCTION RULES
 
-**Note:** This is an LL(1) grammar with left recursion eliminated.
+This is an LL(1) grammar with left recursion eliminated.
 
 ### Program Structure
 ```
@@ -158,10 +156,10 @@ STRING      ::= '"' [^"]* '"'
 
 ## GRAMMAR CLASSIFICATION
 
-**Type:** Context-Free Grammar (CFG)
-**Class:** LL(1) - Suitable for Top-Down Parsing
-**Ambiguity:** Unambiguous
-**Recursion:** Left-recursion eliminated in expressions
+- **Type:** Context-Free Grammar (CFG)
+- **Class:** LL(1) - Suitable for Top-Down Parsing
+- **Ambiguity:** Unambiguous
+- **Recursion:** Left-recursion eliminated in expressions
 
 ---
 
@@ -245,41 +243,5 @@ Literals: NUMBER, IDENTIFIER, STRING
 => "recipe" "make_dough" "(" "ingredient" "flour" ")" "{" "return" <expression> ";" "}"
 => "recipe" "make_dough" "(" "ingredient" "flour" ")" "{" "return" "flour" ";" "}"
 ```
-
----
-
-## GRAMMAR PROPERTIES
-
-1. **Deterministic:** Yes - No ambiguous productions
-2. **Left-Recursive:** No - Eliminated using <expr'> and <term'> productions
-3. **Left-Factored:** Yes - Common prefixes factored out (e.g., <value_tail>, <when_tail>)
-4. **LL(1) Compatible:** Yes - Can use recursive descent parsing
-5. **Operator Precedence:** 
-   - Highest: *, / (in <term>)
-   - Middle: +, - (in <expression>)
-   - Lowest: Comparison operators (in <condition>)
-6. **Associativity:** Left-associative for all operators (achieved through tail recursion)
-
-## LEFT RECURSION ELIMINATION
-
-**Original (Left Recursive):**
-```
-<expression> ::= <expression> "+" <term>
-               | <expression> "-" <term>
-               | <term>
-```
-
-**Transformed (LL(1) Compatible):**
-```
-<expression> ::= <term> <expression'>
-<expression'> ::= "+" <term> <expression'>
-                | "-" <term> <expression'>
-                | ε
-```
-
-This transformation:
-- Eliminates left recursion
-- Maintains left associativity
-- Makes grammar LL(1) parseable
 
 ---
