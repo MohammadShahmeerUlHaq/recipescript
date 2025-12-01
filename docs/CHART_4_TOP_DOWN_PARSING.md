@@ -206,40 +206,51 @@ parse_value():
         return expr
 ```
 
-### Expression Parser (with precedence)
+### Expression Parser (LL(1) with Left Recursion Eliminated)
 ```
 parse_expression():
-    # Handles: <expression> → <term> ((+|-) <term>)*
+    # Handles: <expression> → <term> <expression'>
     left = parse_term()
-    
-    while current_token in ['+', '-']:
+    return parse_expression_prime(left)
+
+parse_expression_prime(left):
+    # Handles: <expression'> → + <term> <expression'> | - <term> <expression'> | ε
+    if current_token in ['+', '-']:
         op = current_token
         advance()
         right = parse_term()
-        left = BinaryOpNode(op, left, right)
-    
-    return left
+        node = BinaryOpNode(op, left, right)
+        return parse_expression_prime(node)  # Tail recursion
+    else:
+        return left  # ε production
 
 parse_term():
-    # Handles: <term> → <factor> ((*|/) <factor>)*
+    # Handles: <term> → <factor> <term'>
     left = parse_factor()
-    
-    while current_token in ['*', '/']:
+    return parse_term_prime(left)
+
+parse_term_prime(left):
+    # Handles: <term'> → * <factor> <term'> | / <factor> <term'> | ε
+    if current_token in ['*', '/']:
         op = current_token
         advance()
         right = parse_factor()
-        left = BinaryOpNode(op, left, right)
-    
-    return left
+        node = BinaryOpNode(op, left, right)
+        return parse_term_prime(node)  # Tail recursion
+    else:
+        return left  # ε production
 
 parse_factor():
-    # Handles: <factor> → NUMBER | IDENTIFIER | ( <expression> )
+    # Handles: <factor> → NUMBER | IDENTIFIER | ( <expression> ) | <recipe_call>
     if current_token == NUMBER:
         value = current_token.value
         advance()
         return NumberNode(value)
     
     elif current_token == IDENTIFIER:
+        # Check if it's a recipe call
+        if peek() == '(':
+            return parse_recipe_call()
         name = current_token.value
         advance()
         return IdentifierNode(name)
@@ -253,6 +264,8 @@ parse_factor():
     else:
         error("Expected number, identifier, or (")
 ```
+
+**Note:** This implementation properly handles left recursion elimination while maintaining left associativity through tail recursion.
 
 ### Operation Parser
 ```
@@ -567,19 +580,47 @@ Add error productions to grammar:
 ### RecipeScript Grammar is LL(1) because:
 
 1. **No Left Recursion**
-   - Original: `<expr> → <expr> + <term>`
-   - Transformed: `<expr> → <term> ((+|-) <term>)*`
+   - Original: `<expression> → <expression> + <term> | <term>`
+   - Transformed: `<expression> → <term> <expression'>`
+   - And: `<expression'> → + <term> <expression'> | - <term> <expression'> | ε`
+   - Uses tail recursion to eliminate left recursion
 
 2. **Left Factored**
    - Common prefixes eliminated
-   - Unique first tokens for alternatives
+   - Example: `<value> → <expression> <value_tail>` where `<value_tail> → <unit> | ε`
+   - Example: `<when_stmt> → when <condition> then { ... } <when_tail>` where `<when_tail> → else { ... } | ε`
 
 3. **Disjoint FIRST Sets**
    - Each alternative has unique starting token
    - No ambiguity in production choice
+   - Example: FIRST(<statement>) alternatives all start with different tokens
 
 4. **Proper FOLLOW Sets**
    - Clear termination points
    - No conflicts
+   - ε productions only where FIRST and FOLLOW are disjoint
+
+### Left Recursion Elimination Example:
+
+**Before (Left Recursive - NOT LL(1)):**
+```
+<expression> ::= <expression> + <term>
+               | <expression> - <term>
+               | <term>
+```
+
+**After (Tail Recursive - LL(1)):**
+```
+<expression> ::= <term> <expression'>
+<expression'> ::= + <term> <expression'>
+                | - <term> <expression'>
+                | ε
+```
+
+**Why this works:**
+- Eliminates left recursion
+- Maintains left associativity
+- Makes grammar LL(1) parseable
+- Can be implemented with recursive descent
 
 ---

@@ -12,6 +12,8 @@
 - **R** = Rightmost derivation in reverse
 - Uses a **stack** and **parsing table**
 
+**Note:** Bottom-up parsing can handle left-recursive grammars directly, unlike top-down parsing. The examples below use simplified grammar rules for clarity. The actual RecipeScript grammar is LL(1) compatible (see CHART_1 and CHART_4).
+
 ---
 
 ## SHIFT-REDUCE PARSING ACTIONS

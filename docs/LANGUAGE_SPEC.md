@@ -78,24 +78,29 @@ Examples: flour, sugar, oven_temp, mix1
 
 ## 3. Syntax Specification (BNF Grammar)
 
+**Note:** This grammar is LL(1) compatible with left recursion eliminated.
+
 ```bnf
 <program> ::= <recipe_list> <statement_list>
+            | <recipe_list>
+            | <statement_list>
 
 <recipe_list> ::= <recipe_decl> <recipe_list>
                 | <recipe_decl>
-                | ε
 
-<recipe_decl> ::= "recipe" <identifier> "(" <param_list> ")" "{" <statement_list> "}"
-                | "recipe" <identifier> "(" <param_list> ")" "returns" <type> "{" <statement_list> "}"
+<recipe_decl> ::= "recipe" IDENTIFIER "(" <param_list> ")" "{" <statement_list> "}"
+                | "recipe" IDENTIFIER "(" <param_list> ")" "returns" <type> "{" <statement_list> "}"
 
-<param_list> ::= <parameter>
-               | <parameter> "," <param_list>
+<param_list> ::= <parameter> <param_list'>
                | ε
 
-<parameter> ::= <type> <identifier>
+<param_list'> ::= "," <parameter> <param_list'>
+                | ε
 
-<statement_list> ::= <statement>
-                   | <statement> <statement_list>
+<parameter> ::= <type> IDENTIFIER
+
+<statement_list> ::= <statement> <statement_list>
+                   | <statement>
 
 <statement> ::= <input_stmt> ";"
               | <declaration> ";"
@@ -103,79 +108,93 @@ Examples: flour, sugar, oven_temp, mix1
               | <control_flow>
               | <recipe_call> ";"
               | <return_stmt> ";"
-              | <comment>
 
-<recipe_call> ::= <identifier> "(" <arg_list> ")"
+<recipe_call> ::= IDENTIFIER "(" <arg_list> ")"
 
-<arg_list> ::= <expression>
-             | <expression> "," <arg_list>
+<arg_list> ::= <expression> <arg_list'>
              | ε
+
+<arg_list'> ::= "," <expression> <arg_list'>
+              | ε
 
 <return_stmt> ::= "return" <expression>
                 | "return"
 
-<input_stmt> ::= "input" <identifier>
+<input_stmt> ::= "input" IDENTIFIER
 
-<declaration> ::= <type> <identifier> "=" <value>
+<declaration> ::= <type> IDENTIFIER "=" <value>
 
 <type> ::= "ingredient" | "time" | "temp" | "quantity" | "text"
 
-<value> ::= <expression> <unit>
-          | <expression>
-          | <text_literal>
-          | <identifier>
-          | <identifier>
+<value> ::= <expression> <value_tail>
+          | STRING
+
+<value_tail> ::= <unit>
+               | ε
 
 <unit> ::= "cups" | "tbsp" | "tsp" | "grams" | "ml" | "oz" | "lbs"
          | "F" | "C"
          | "minutes" | "seconds" | "hours"
 
 <operation> ::= "mix" <ingredient_list>
-              | "heat" <identifier> "to" <value>
-              | "wait" <time_value>
-              | "serve" <text_literal>
-              | "display" <identifier>
-              | "add" <identifier> "to" <identifier>
-              | "scale" <identifier> "by" <number>
+              | "heat" IDENTIFIER "to" <value>
+              | "wait" <value>
+              | "serve" STRING
+              | "display" IDENTIFIER
+              | "add" IDENTIFIER "to" IDENTIFIER
+              | "scale" IDENTIFIER "by" NUMBER
 
-<ingredient_list> ::= <identifier>
-                    | <identifier> "with" <ingredient_list>
+<ingredient_list> ::= IDENTIFIER <ingredient_list'>
+
+<ingredient_list'> ::= "with" IDENTIFIER <ingredient_list'>
+                     | ε
 
 <control_flow> ::= <repeat_stmt>
                  | <foreach_stmt>
                  | <when_stmt>
 
-<repeat_stmt> ::= "repeat" <number> "times" "{" <statement_list> "}"
+<repeat_stmt> ::= "repeat" NUMBER "times" "{" <statement_list> "}"
 
-<foreach_stmt> ::= "foreach" <identifier> "in" <identifier> "{" <statement_list> "}"
+<foreach_stmt> ::= "foreach" IDENTIFIER "in" IDENTIFIER "{" <statement_list> "}"
 
-<when_stmt> ::= "when" <condition> "then" "{" <statement_list> "}"
-              | "when" <condition> "then" "{" <statement_list> "}" 
-                "else" "{" <statement_list> "}"
+<when_stmt> ::= "when" <condition> "then" "{" <statement_list> "}" <when_tail>
+
+<when_tail> ::= "else" "{" <statement_list> "}"
+              | ε
 
 <condition> ::= <expression> <comparison_op> <expression>
 
 <comparison_op> ::= "==" | "!=" | ">" | "<" | ">=" | "<="
 
-<expression> ::= <term>
-               | <expression> "+" <term>
-               | <expression> "-" <term>
+<expression> ::= <term> <expression'>
 
-<term> ::= <factor>
-         | <term> "*" <factor>
-         | <term> "/" <factor>
+<expression'> ::= "+" <term> <expression'>
+                | "-" <term> <expression'>
+                | ε
 
-<factor> ::= <number>
-           | <identifier>
+<term> ::= <factor> <term'>
+
+<term'> ::= "*" <factor> <term'>
+          | "/" <factor> <term'>
+          | ε
+
+<factor> ::= NUMBER
+           | IDENTIFIER
            | "(" <expression> ")"
+           | <recipe_call>
+```
 
-<number> ::= [0-9]+ | [0-9]+ "." [0-9]+
+### Terminal Symbols (Tokens from Lexer)
+```
+NUMBER      - Integer or floating-point literal: [0-9]+ | [0-9]+\.[0-9]+
+IDENTIFIER  - Variable/function name: [a-zA-Z_][a-zA-Z0-9_]*
+STRING      - Text literal: "[^"]*"
+```
 
-<identifier> ::= [a-zA-Z_][a-zA-Z0-9_]*
-
-<text_literal> ::= '"' [characters]* '"'
-
-<comment> ::= "#" [characters until newline]
+### Lexical Notes
+- **Comments:** `#` followed by any characters until newline. Handled by lexer; ignored by parser.
+- **Whitespace:** Spaces, tabs, newlines are ignored by lexer.
+- **Keywords:** Reserved words like `recipe`, `return`, `ingredient`, etc. are recognized by lexer.
 ```
 
 ## 4. Semantic Rules
