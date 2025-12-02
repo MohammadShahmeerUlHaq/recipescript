@@ -1,0 +1,117 @@
+recipe calculate_baking_time(quantity pizzas, quantity oven_value) returns time {
+    quantity base_time = 12;
+    quantity extra_time = pizzas / 2;
+    quantity temp_factor = oven_value / 100;
+    quantity adjusted = base_time + extra_time - temp_factor;
+    time result = adjusted minutes;
+    return result;
+}
+
+recipe prepare_pizza_dough(ingredient flour, ingredient water, ingredient yeast, ingredient salt) returns ingredient {
+    mix flour with water with yeast;
+    add salt to flour;
+    wait 5 minutes;
+    return flour;
+}
+
+recipe prepare_sauce(ingredient tomatoes, ingredient oil, temp cook_temp) returns ingredient {
+    mix tomatoes with oil;
+    wait 3 minutes;
+    return tomatoes;
+}
+
+input people;
+
+serve "=== Homemade Pizza Recipe ===";
+display people;
+
+quantity pizzas = people / 2;
+quantity dough_per_pizza = 250;
+quantity sauce_per_pizza = 100;
+
+ingredient flour = dough_per_pizza * pizzas grams;
+ingredient water = pizzas * 150 ml;
+ingredient yeast = pizzas * 7 grams;
+ingredient salt = pizzas * 5 grams;
+ingredient tomatoes = sauce_per_pizza * pizzas grams;
+ingredient olive_oil = pizzas * 20 ml;
+ingredient cheese = pizzas * 150 grams;
+
+temp oven = 450 F;
+temp sauce_heat = 200 F;
+
+when pizzas == 1 then {
+    serve "Making single pizza";
+}
+
+when pizzas != 2 then {
+    serve "Custom pizza quantity";
+}
+
+when pizzas > 3 then {
+    serve "Large party! Scaling up ingredients by 10%";
+    scale flour by 1.1;
+    scale water by 1.1;
+    scale yeast by 1.1;
+    scale salt by 1.1;
+    scale tomatoes by 1.1;
+    scale olive_oil by 1.1;
+    scale cheese by 1.1;
+}
+
+when pizzas < 2 then {
+    serve "Small batch";
+}
+
+when pizzas >= 2 then {
+    serve "Good for family dinner";
+}
+
+when pizzas <= 5 then {
+    serve "Manageable batch size";
+} else {
+    serve "Very large order!";
+}
+
+serve "Ingredients calculated for pizzas:";
+display pizzas;
+serve "Dough ingredients:";
+display flour;
+display water;
+display yeast;
+display salt;
+serve "Sauce ingredients:";
+display tomatoes;
+display olive_oil;
+serve "Toppings:";
+display cheese;
+
+ingredient dough = prepare_pizza_dough(flour, water, yeast, salt);
+
+repeat 3 times {
+    mix dough;
+    wait 2 minutes;
+}
+
+ingredient sauce = prepare_sauce(tomatoes, olive_oil, sauce_heat);
+
+add cheese to dough;
+
+quantity oven_check = 450;
+
+when oven_check > 400 then {
+    serve "Oven is hot enough for pizza";
+} else {
+    serve "Heating oven to proper temperature";
+    wait 10 minutes;
+}
+
+quantity oven_value = 450;
+time baking_time = calculate_baking_time(pizzas, oven_value);
+display baking_time;
+
+when pizzas > 4 then {
+    serve "Baking in batches - need extra dough for multiple rounds";
+}
+
+serve "Pizza ready to serve! Enjoy!";

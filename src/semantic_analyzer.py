@@ -11,21 +11,39 @@ class SymbolTable:
         self.symbols = {}
         self.scope_level = 0
     
-    def declare(self, name, var_type, line=0):
+    def declare(self, name, var_type, line=0, is_parameter=False):
         """Declare a new variable"""
-        if name in self.symbols:
-            raise Exception(f"Semantic Error at line {line}: Variable '{name}' already declared")
-        self.symbols[name] = {
+        # Check if variable already exists in CURRENT scope with same qualified name
+        qualified_name = f"{name}_scope{self.scope_level}" if self.scope_level > 0 else name
+        
+        if qualified_name in self.symbols:
+            raise Exception(f"Semantic Error at line {line}: Variable '{name}' already declared in current scope")
+        
+        # Store with qualified name to allow same name in different scopes
+        self.symbols[qualified_name] = {
             'type': var_type,
             'scope': self.scope_level,
-            'line': line
+            'line': line,
+            'original_name': name,
+            'is_parameter': is_parameter
         }
     
     def lookup(self, name, line=0):
-        """Look up a variable"""
-        if name not in self.symbols:
-            raise Exception(f"Semantic Error at line {line}: Variable '{name}' not declared")
-        return self.symbols[name]
+        """Look up a variable - search from current scope outward"""
+        # Try current scope first
+        qualified_name = f"{name}_scope{self.scope_level}" if self.scope_level > 0 else name
+        if qualified_name in self.symbols:
+            return self.symbols[qualified_name]
+        
+        # Try outer scopes (search from current scope down to 0)
+        for scope in range(self.scope_level - 1, -1, -1):
+            qualified_name = f"{name}_scope{scope}" if scope > 0 else name
+            if qualified_name in self.symbols:
+                return self.symbols[qualified_name]
+        
+        # Not found in any scope
+        raise Exception(f"Semantic Error at line {line}: Variable '{name}' not declared")
+
     
     def enter_scope(self):
         """Enter a new scope"""
@@ -33,18 +51,37 @@ class SymbolTable:
     
     def exit_scope(self):
         """Exit current scope"""
-        # Remove variables from current scope
-        self.symbols = {k: v for k, v in self.symbols.items() if v['scope'] < self.scope_level}
+        # DON'T remove variables - keep them to show scope information
+        # Just decrement scope level
         self.scope_level -= 1
     
     def display(self):
-        """Display symbol table"""
+        """Display symbol table with proper formatting"""
         print("\n=== Symbol Table ===")
-        print(f"{'Name':<15} {'Type':<15} {'Scope':<8} {'Line':<8}")
-        print("-" * 50)
-        for name, info in self.symbols.items():
+        print(f"{'Name':<20} {'Type':<15} {'Scope':<8} {'Line':<10} {'Context':<20}")
+        print("-" * 75)
+        
+        # Sort by scope first, then by line
+        sorted_symbols = sorted(self.symbols.items(), key=lambda x: (x[1]['scope'], x[1]['line']))
+        
+        for name, info in sorted_symbols:
             type_str = str(info['type']).split('.')[-1] if hasattr(info['type'], 'name') else str(info['type'])
-            print(f"{name:<15} {type_str:<15} {info['scope']:<8} {info['line']:<8}")
+            display_name = info.get('original_name', name)
+            
+            # Determine context
+            if info['scope'] == 0:
+                if type_str == 'RECIPE':
+                    context = "(function)"
+                else:
+                    context = "(global)"
+            else:
+                # For scope 1, check if it's marked as a parameter
+                if info.get('is_parameter', False):
+                    context = "(parameter)"
+                else:
+                    context = "(local)"
+            
+            print(f"{display_name:<20} {type_str:<15} {info['scope']:<8} {info['line']:<10} {context:<20}")
 
 class SemanticAnalyzer:
     def __init__(self):
@@ -90,12 +127,14 @@ class SemanticAnalyzer:
     def visit_InputStatement(self, node):
         """Visit input statement"""
         # Declare input variable as quantity type
-        self.symbol_table.declare(node.var_name, TokenType.QUANTITY)
+        line = getattr(node, 'line', 0)
+        self.symbol_table.declare(node.var_name, TokenType.QUANTITY, line)
     
     def visit_Declaration(self, node):
         """Visit declaration node"""
         # Declare variable in symbol table
-        self.symbol_table.declare(node.name, node.var_type)
+        line = getattr(node, 'line', 0)
+        self.symbol_table.declare(node.name, node.var_type, line)
         
         # Check value type compatibility
         self.visit(node.value)
@@ -194,17 +233,19 @@ class SemanticAnalyzer:
         # Visit condition
         self.visit(node.condition)
         
-        # Visit then body
+        # Visit then body (create new scope)
         self.symbol_table.enter_scope()
         for stmt in node.then_body:
             self.visit(stmt)
+        # Exit scope (but variables are kept in symbol table)
         self.symbol_table.exit_scope()
         
-        # Visit else body if exists
+        # Visit else body if exists (create new scope)
         if node.else_body:
             self.symbol_table.enter_scope()
             for stmt in node.else_body:
                 self.visit(stmt)
+            # Exit scope (but variables are kept in symbol table)
             self.symbol_table.exit_scope()
     
     def visit_BinaryOp(self, node):
@@ -233,10 +274,15 @@ class SemanticAnalyzer:
         if recipe.name in self.recipe_table:
             self.error(f"Recipe '{recipe.name}' already defined")
         
+        # Add recipe to symbol table as a function
+        line = getattr(recipe, 'line', 0)
+        self.symbol_table.declare(recipe.name, 'RECIPE', line)
+        
         self.recipe_table[recipe.name] = {
             'params': recipe.params,
             'return_type': recipe.return_type,
-            'body': recipe.body
+            'body': recipe.body,
+            'line': line
         }
     
     def visit_RecipeDeclaration(self, node):
@@ -246,9 +292,10 @@ class SemanticAnalyzer:
         # Create new scope for recipe
         self.symbol_table.enter_scope()
         
-        # Add parameters to symbol table
+        # Add parameters to symbol table (they will have scope 1)
+        line = getattr(node, 'line', 0)
         for param in node.params:
-            self.symbol_table.declare(param['name'], param['type'])
+            self.symbol_table.declare(param['name'], param['type'], line, is_parameter=True)
         
         # Analyze recipe body
         has_return = False
@@ -261,7 +308,7 @@ class SemanticAnalyzer:
         if node.return_type and not has_return:
             self.error(f"Recipe '{node.name}' must return a value")
         
-        # Exit recipe scope
+        # Exit recipe scope (but variables are kept in symbol table)
         self.symbol_table.exit_scope()
         self.current_recipe = None
     

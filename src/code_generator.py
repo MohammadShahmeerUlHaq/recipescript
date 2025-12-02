@@ -24,7 +24,14 @@ class CodeGenerator:
         
         # Second pass: execute instructions (skip recipe bodies initially)
         self.pc = 0
+        max_iterations = len(instructions) * 100  # Safety limit
+        iteration_count = 0
+        
         while self.pc < len(instructions):
+            iteration_count += 1
+            if iteration_count > max_iterations:
+                raise Exception(f"Infinite loop detected at PC={self.pc}, instruction: {instructions[self.pc]}")
+            
             instr = instructions[self.pc]
             
             # Skip recipe definitions during main execution
@@ -113,11 +120,33 @@ class CodeGenerator:
         elif instr.op == 'mul':
             val1 = self.get_value(instr.arg1)
             val2 = self.get_value(instr.arg2)
+            # Handle string values (extract numeric part)
+            if isinstance(val1, str) and ' ' in val1:
+                try:
+                    val1 = float(val1.split()[0])
+                except (ValueError, IndexError):
+                    pass
+            if isinstance(val2, str) and ' ' in val2:
+                try:
+                    val2 = float(val2.split()[0])
+                except (ValueError, IndexError):
+                    pass
             self.variables[instr.result] = val1 * val2
         
         elif instr.op == 'div':
             val1 = self.get_value(instr.arg1)
             val2 = self.get_value(instr.arg2)
+            # Handle string values (extract numeric part)
+            if isinstance(val1, str) and ' ' in val1:
+                try:
+                    val1 = float(val1.split()[0])
+                except (ValueError, IndexError):
+                    pass
+            if isinstance(val2, str) and ' ' in val2:
+                try:
+                    val2 = float(val2.split()[0])
+                except (ValueError, IndexError):
+                    pass
             if val2 == 0:
                 raise Exception("Runtime Error: Division by zero")
             self.variables[instr.result] = val1 / val2
@@ -135,21 +164,65 @@ class CodeGenerator:
         elif instr.op == 'gt':
             val1 = self.get_value(instr.arg1)
             val2 = self.get_value(instr.arg2)
+            # Handle string values (extract numeric part)
+            if isinstance(val1, str) and ' ' in val1:
+                try:
+                    val1 = float(val1.split()[0])
+                except (ValueError, IndexError):
+                    pass
+            if isinstance(val2, str) and ' ' in val2:
+                try:
+                    val2 = float(val2.split()[0])
+                except (ValueError, IndexError):
+                    pass
             self.variables[instr.result] = 1 if val1 > val2 else 0
         
         elif instr.op == 'lt':
             val1 = self.get_value(instr.arg1)
             val2 = self.get_value(instr.arg2)
+            # Handle string values (extract numeric part)
+            if isinstance(val1, str) and ' ' in val1:
+                try:
+                    val1 = float(val1.split()[0])
+                except (ValueError, IndexError):
+                    pass
+            if isinstance(val2, str) and ' ' in val2:
+                try:
+                    val2 = float(val2.split()[0])
+                except (ValueError, IndexError):
+                    pass
             self.variables[instr.result] = 1 if val1 < val2 else 0
         
         elif instr.op == 'gte':
             val1 = self.get_value(instr.arg1)
             val2 = self.get_value(instr.arg2)
+            # Handle string values (extract numeric part)
+            if isinstance(val1, str) and ' ' in val1:
+                try:
+                    val1 = float(val1.split()[0])
+                except (ValueError, IndexError):
+                    pass
+            if isinstance(val2, str) and ' ' in val2:
+                try:
+                    val2 = float(val2.split()[0])
+                except (ValueError, IndexError):
+                    pass
             self.variables[instr.result] = 1 if val1 >= val2 else 0
         
         elif instr.op == 'lte':
             val1 = self.get_value(instr.arg1)
             val2 = self.get_value(instr.arg2)
+            # Handle string values (extract numeric part)
+            if isinstance(val1, str) and ' ' in val1:
+                try:
+                    val1 = float(val1.split()[0])
+                except (ValueError, IndexError):
+                    pass
+            if isinstance(val2, str) and ' ' in val2:
+                try:
+                    val2 = float(val2.split()[0])
+                except (ValueError, IndexError):
+                    pass
             self.variables[instr.result] = 1 if val1 <= val2 else 0
         
         elif instr.op == 'label':

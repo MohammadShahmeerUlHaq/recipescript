@@ -1,0 +1,43 @@
+# Compact example showcasing all RecipeScript features
+
+recipe make_dough(ingredient flour, ingredient water) returns ingredient {
+    quantity mix_time = 2;
+    mix flour with water;
+    wait mix_time minutes;
+    return flour;
+}
+
+input people;
+serve "=== Quick Recipe ===";
+
+quantity servings = people / 2;
+ingredient flour = servings * 100 grams;
+ingredient water = servings * 50 ml;
+ingredient cheese = servings * 30 grams;
+temp oven = 350 F;
+
+when servings > 2 then {
+    quantity extra = 20;
+    serve "Large batch";
+    scale flour by 1.2;
+} else {
+    serve "Small batch";
+}
+
+display servings;
+display flour;
+display water;
+
+ingredient dough = make_dough(flour, water);
+
+repeat 2 times {
+    mix dough;
+}
+
+add cheese to dough;
+
+when oven > 300 then {
+    serve "Oven ready!";
+}
+
+serve "Done!";

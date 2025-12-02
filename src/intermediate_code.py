@@ -1,6 +1,26 @@
 """
 Intermediate Code Generator for RecipeScript
 Phase 4: Generates Three-Address Code (TAC)
+
+TAC Conventions Used:
+---------------------
+1. UNITS: Units are treated as value attributes (domain-specific for cooking)
+   Format: "value unit" (e.g., "2 minutes", "350 fahrenheit")
+   Example: t0 = 2 minutes
+   
+2. FUNCTION CALLS: Standard format with argument count
+   Format: result = CALL function_name, arg_count
+   Example: t10 = CALL make_dough, 2
+   
+3. LOOP CONDITIONS: Exit condition using >= with if_true
+   Format: if counter >= limit goto exit_label
+   Note: Equivalent to "if counter < limit goto continue" but makes exit explicit
+   
+4. LABELS: Sequential numbering (L0, L1, L2, ...)
+   
+5. TEMPORARIES: Sequential numbering (t0, t1, t2, ...)
+   
+6. OPERATIONS: Standard arithmetic (add, sub, mul, div) and comparisons (eq, neq, gt, lt, gte, lte)
 """
 
 from parser import *
@@ -164,23 +184,31 @@ class IntermediateCodeGenerator:
         self.emit('add_ingredient', node.ingredient, node.target)
     
     def visit_RepeatStatement(self, node):
-        """Visit repeat statement"""
-        # Generate loop structure
-        # counter = 0
-        # L1: if counter >= count goto L2
-        # body
-        # counter = counter + 1
-        # goto L1
-        # L2:
+        """
+        Visit repeat statement and generate loop TAC.
         
+        Loop structure (using >= and if_true for exit condition):
+            counter = 0
+            L_start: 
+                if counter >= count goto L_end    # Exit when done
+                <body>
+                counter = counter + 1
+                goto L_start
+            L_end:
+        
+        Note: We use "if counter >= count" with if_true instead of the more
+        common "if counter < count" with if_false. Both are semantically
+        equivalent, but this form makes the exit condition explicit.
+        """
         counter = self.new_temp()
         label_start = self.new_label()
         label_end = self.new_label()
         
+        # Initialize counter
         self.emit('assign', '0', None, counter)
         self.emit('label', None, None, label_start)
         
-        # Check condition (if counter >= count, exit loop)
+        # Check exit condition: if counter >= count, exit loop
         temp_cond = self.new_temp()
         self.emit('gte', counter, node.count, temp_cond)
         self.emit('if_true', temp_cond, None, label_end)
@@ -282,11 +310,13 @@ class IntermediateCodeGenerator:
         else:
             number_result = node.number
         
-        # If there's a unit, we need to create a temp variable to store
-        # the numeric value, then create a formatted string with the unit
+        # If there's a unit, create a value with unit annotation
+        # In RecipeScript, units are domain-specific and treated as value attributes
+        # TAC format: "value unit" (e.g., "2 minutes", "350 fahrenheit")
+        # This is intentional for a cooking DSL where units are essential
         if node.unit:
             unit_str = str(node.unit).split('.')[-1].lower()
-            # Create a temp to hold the formatted value
+            # Create a temp to hold the value with unit
             temp = self.new_temp()
             self.emit('assign', f"{number_result} {unit_str}", None, temp)
             return temp

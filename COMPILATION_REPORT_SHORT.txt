@@ -1,0 +1,519 @@
+================================================================================
+COMPREHENSIVE COMPILATION REPORT
+RecipeScript Compiler - All Phases
+================================================================================
+
+Source File: examples/short_example.recipe
+Input Value: 6
+================================================================================
+
+================================================================================
+PHASE 1: LEXICAL ANALYSIS (TOKENIZATION)
+================================================================================
+
+Total Tokens Generated: 145
+
+Token List:
+--------------------------------------------------------------------------------
+   1. Token(TokenType.RECIPE, recipe, 3:1)
+   2. Token(TokenType.IDENTIFIER, make_dough, 3:8)
+   3. Token(TokenType.LPAREN, (, 3:18)
+   4. Token(TokenType.INGREDIENT, ingredient, 3:19)
+   5. Token(TokenType.IDENTIFIER, flour, 3:30)
+   6. Token(TokenType.COMMA, ,, 3:35)
+   7. Token(TokenType.INGREDIENT, ingredient, 3:37)
+   8. Token(TokenType.IDENTIFIER, water, 3:48)
+   9. Token(TokenType.RPAREN, ), 3:53)
+  10. Token(TokenType.RETURNS, returns, 3:55)
+  11. Token(TokenType.INGREDIENT, ingredient, 3:63)
+  12. Token(TokenType.LBRACE, {, 3:74)
+  13. Token(TokenType.QUANTITY, quantity, 4:5)
+  14. Token(TokenType.IDENTIFIER, mix_time, 4:14)
+  15. Token(TokenType.ASSIGN, =, 4:23)
+  16. Token(TokenType.NUMBER, 2, 4:25)
+  17. Token(TokenType.SEMICOLON, ;, 4:26)
+  18. Token(TokenType.MIX, mix, 5:5)
+  19. Token(TokenType.IDENTIFIER, flour, 5:9)
+  20. Token(TokenType.WITH, with, 5:15)
+  21. Token(TokenType.IDENTIFIER, water, 5:20)
+  22. Token(TokenType.SEMICOLON, ;, 5:25)
+  23. Token(TokenType.WAIT, wait, 6:5)
+  24. Token(TokenType.IDENTIFIER, mix_time, 6:10)
+  25. Token(TokenType.MINUTES, minutes, 6:19)
+  26. Token(TokenType.SEMICOLON, ;, 6:26)
+  27. Token(TokenType.RETURN, return, 7:5)
+  28. Token(TokenType.IDENTIFIER, flour, 7:12)
+  29. Token(TokenType.SEMICOLON, ;, 7:17)
+  30. Token(TokenType.RBRACE, }, 8:1)
+  31. Token(TokenType.INPUT, input, 10:1)
+  32. Token(TokenType.IDENTIFIER, people, 10:7)
+  33. Token(TokenType.SEMICOLON, ;, 10:13)
+  34. Token(TokenType.SERVE, serve, 11:1)
+  35. Token(TokenType.STRING, === Quick Recipe ===, 11:7)
+  36. Token(TokenType.SEMICOLON, ;, 11:29)
+  37. Token(TokenType.QUANTITY, quantity, 13:1)
+  38. Token(TokenType.IDENTIFIER, servings, 13:10)
+  39. Token(TokenType.ASSIGN, =, 13:19)
+  40. Token(TokenType.IDENTIFIER, people, 13:21)
+  41. Token(TokenType.DIVIDE, /, 13:28)
+  42. Token(TokenType.NUMBER, 2, 13:30)
+  43. Token(TokenType.SEMICOLON, ;, 13:31)
+  44. Token(TokenType.INGREDIENT, ingredient, 14:1)
+  45. Token(TokenType.IDENTIFIER, flour, 14:12)
+  46. Token(TokenType.ASSIGN, =, 14:18)
+  47. Token(TokenType.IDENTIFIER, servings, 14:20)
+  48. Token(TokenType.MULTIPLY, *, 14:29)
+  49. Token(TokenType.NUMBER, 100, 14:31)
+  50. Token(TokenType.GRAMS, grams, 14:35)
+  51. Token(TokenType.SEMICOLON, ;, 14:40)
+  52. Token(TokenType.INGREDIENT, ingredient, 15:1)
+  53. Token(TokenType.IDENTIFIER, water, 15:12)
+  54. Token(TokenType.ASSIGN, =, 15:18)
+  55. Token(TokenType.IDENTIFIER, servings, 15:20)
+  56. Token(TokenType.MULTIPLY, *, 15:29)
+  57. Token(TokenType.NUMBER, 50, 15:31)
+  58. Token(TokenType.ML, ml, 15:34)
+  59. Token(TokenType.SEMICOLON, ;, 15:36)
+  60. Token(TokenType.INGREDIENT, ingredient, 16:1)
+  61. Token(TokenType.IDENTIFIER, cheese, 16:12)
+  62. Token(TokenType.ASSIGN, =, 16:19)
+  63. Token(TokenType.IDENTIFIER, servings, 16:21)
+  64. Token(TokenType.MULTIPLY, *, 16:30)
+  65. Token(TokenType.NUMBER, 30, 16:32)
+  66. Token(TokenType.GRAMS, grams, 16:35)
+  67. Token(TokenType.SEMICOLON, ;, 16:40)
+  68. Token(TokenType.TEMP, temp, 17:1)
+  69. Token(TokenType.IDENTIFIER, oven, 17:6)
+  70. Token(TokenType.ASSIGN, =, 17:11)
+  71. Token(TokenType.NUMBER, 350, 17:13)
+  72. Token(TokenType.FAHRENHEIT, F, 17:17)
+  73. Token(TokenType.SEMICOLON, ;, 17:18)
+  74. Token(TokenType.WHEN, when, 19:1)
+  75. Token(TokenType.IDENTIFIER, servings, 19:6)
+  76. Token(TokenType.GT, >, 19:15)
+  77. Token(TokenType.NUMBER, 2, 19:17)
+  78. Token(TokenType.THEN, then, 19:19)
+  79. Token(TokenType.LBRACE, {, 19:24)
+  80. Token(TokenType.QUANTITY, quantity, 20:5)
+  81. Token(TokenType.IDENTIFIER, extra, 20:14)
+  82. Token(TokenType.ASSIGN, =, 20:20)
+  83. Token(TokenType.NUMBER, 20, 20:22)
+  84. Token(TokenType.SEMICOLON, ;, 20:24)
+  85. Token(TokenType.SERVE, serve, 21:5)
+  86. Token(TokenType.STRING, Large batch, 21:11)
+  87. Token(TokenType.SEMICOLON, ;, 21:24)
+  88. Token(TokenType.SCALE, scale, 22:5)
+  89. Token(TokenType.IDENTIFIER, flour, 22:11)
+  90. Token(TokenType.BY, by, 22:17)
+  91. Token(TokenType.NUMBER, 1.2, 22:20)
+  92. Token(TokenType.SEMICOLON, ;, 22:23)
+  93. Token(TokenType.RBRACE, }, 23:1)
+  94. Token(TokenType.ELSE, else, 23:3)
+  95. Token(TokenType.LBRACE, {, 23:8)
+  96. Token(TokenType.SERVE, serve, 24:5)
+  97. Token(TokenType.STRING, Small batch, 24:11)
+  98. Token(TokenType.SEMICOLON, ;, 24:24)
+  99. Token(TokenType.RBRACE, }, 25:1)
+ 100. Token(TokenType.DISPLAY, display, 27:1)
+ 101. Token(TokenType.IDENTIFIER, servings, 27:9)
+ 102. Token(TokenType.SEMICOLON, ;, 27:17)
+ 103. Token(TokenType.DISPLAY, display, 28:1)
+ 104. Token(TokenType.IDENTIFIER, flour, 28:9)
+ 105. Token(TokenType.SEMICOLON, ;, 28:14)
+ 106. Token(TokenType.DISPLAY, display, 29:1)
+ 107. Token(TokenType.IDENTIFIER, water, 29:9)
+ 108. Token(TokenType.SEMICOLON, ;, 29:14)
+ 109. Token(TokenType.INGREDIENT, ingredient, 31:1)
+ 110. Token(TokenType.IDENTIFIER, dough, 31:12)
+ 111. Token(TokenType.ASSIGN, =, 31:18)
+ 112. Token(TokenType.IDENTIFIER, make_dough, 31:20)
+ 113. Token(TokenType.LPAREN, (, 31:30)
+ 114. Token(TokenType.IDENTIFIER, flour, 31:31)
+ 115. Token(TokenType.COMMA, ,, 31:36)
+ 116. Token(TokenType.IDENTIFIER, water, 31:38)
+ 117. Token(TokenType.RPAREN, ), 31:43)
+ 118. Token(TokenType.SEMICOLON, ;, 31:44)
+ 119. Token(TokenType.REPEAT, repeat, 33:1)
+ 120. Token(TokenType.NUMBER, 2, 33:8)
+ 121. Token(TokenType.TIMES, times, 33:10)
+ 122. Token(TokenType.LBRACE, {, 33:16)
+ 123. Token(TokenType.MIX, mix, 34:5)
+ 124. Token(TokenType.IDENTIFIER, dough, 34:9)
+ 125. Token(TokenType.SEMICOLON, ;, 34:14)
+ 126. Token(TokenType.RBRACE, }, 35:1)
+ 127. Token(TokenType.ADD, add, 37:1)
+ 128. Token(TokenType.IDENTIFIER, cheese, 37:5)
+ 129. Token(TokenType.TO, to, 37:12)
+ 130. Token(TokenType.IDENTIFIER, dough, 37:15)
+ 131. Token(TokenType.SEMICOLON, ;, 37:20)
+ 132. Token(TokenType.WHEN, when, 39:1)
+ 133. Token(TokenType.IDENTIFIER, oven, 39:6)
+ 134. Token(TokenType.GT, >, 39:11)
+ 135. Token(TokenType.NUMBER, 300, 39:13)
+ 136. Token(TokenType.THEN, then, 39:17)
+ 137. Token(TokenType.LBRACE, {, 39:22)
+ 138. Token(TokenType.SERVE, serve, 40:5)
+ 139. Token(TokenType.STRING, Oven ready!, 40:11)
+ 140. Token(TokenType.SEMICOLON, ;, 40:24)
+ 141. Token(TokenType.RBRACE, }, 41:1)
+ 142. Token(TokenType.SERVE, serve, 43:1)
+ 143. Token(TokenType.STRING, Done!, 43:7)
+ 144. Token(TokenType.SEMICOLON, ;, 43:14)
+ 145. Token(TokenType.EOF, None, 44:1)
+
+================================================================================
+PHASE 2: SYNTAX ANALYSIS (PARSING)
+================================================================================
+
+Recipes Parsed: 1
+Main Statements: 16
+
+Recipe Declarations:
+--------------------------------------------------------------------------------
+Recipe: make_dough
+  Parameters: 2
+    - flour: TokenType.INGREDIENT
+    - water: TokenType.INGREDIENT
+  Return Type: TokenType.INGREDIENT
+  Body Statements: 4
+
+Abstract Syntax Tree (AST) - Detailed Structure:
+--------------------------------------------------------------------------------
+Program
+├── RecipeList (1 recipe)
+│   └── RecipeDeclaration
+│       ├── Name: make_dough
+│       ├── Parameters (2)
+│       │   ├── Parameter(name="flour", type=INGREDIENT)
+│       │   └── Parameter(name="water", type=INGREDIENT)
+│       ├── ReturnType: INGREDIENT
+│       └── Body (StatementList: 4 statements)
+│           ├── DeclarationStatement
+│           │   ├── Variable: mix_time
+│           │   ├── Type: QUANTITY
+│           │   └── Value (Expression):
+│           │       Literal(2)
+│           ├── MixStatement
+│           │   └── Ingredients (IdentifierList)
+│           │       ├── Identifier: flour
+│           │       └── Identifier: water
+│           ├── WaitStatement
+│           │   └── Duration (Expression):
+│           │       ValueWithUnit(Identifier(mix_time), unit=minutes)
+│           └── ReturnStatement
+│               └── Value (Expression): Identifier(flour)
+└── MainBlock (16 statements)
+    ├── InputStatement
+    │   └── Variable (Identifier): people
+    ├── ServeStatement
+    │   └── Message (StringLiteral): "=== Quick Recipe ==="
+    ├── DeclarationStatement
+    │   ├── Variable: servings
+    │   ├── Type: QUANTITY
+    │   └── Value (Expression):
+    │       BinaryExpression(DIVIDE, Identifier(people), Literal(2))
+    ├── DeclarationStatement
+    │   ├── Variable: flour
+    │   ├── Type: INGREDIENT
+    │   └── Value (Expression):
+    │       ValueWithUnit(BinaryExpression(MULTIPLY, Identifier(servings), Literal(100)), unit=grams)
+    ├── DeclarationStatement
+    │   ├── Variable: water
+    │   ├── Type: INGREDIENT
+    │   └── Value (Expression):
+    │       ValueWithUnit(BinaryExpression(MULTIPLY, Identifier(servings), Literal(50)), unit=ml)
+    ├── DeclarationStatement
+    │   ├── Variable: cheese
+    │   ├── Type: INGREDIENT
+    │   └── Value (Expression):
+    │       ValueWithUnit(BinaryExpression(MULTIPLY, Identifier(servings), Literal(30)), unit=grams)
+    ├── DeclarationStatement
+    │   ├── Variable: oven
+    │   ├── Type: TEMP
+    │   └── Value (Expression):
+    │       ValueWithUnit(Literal(350), unit=fahrenheit)
+    ├── WhenStatement
+    │   ├── Condition (Expression):
+    │   │   BinaryExpression(GT, Identifier(servings), Literal(2))
+    │   ├── ThenBlock (StatementList: 3 statements)
+    │   │   ├── DeclarationStatement
+    │   │   │   ├── Variable: extra
+    │   │   │   ├── Type: QUANTITY
+    │   │   │   └── Value (Expression):
+    │   │   │       Literal(20)
+    │   │   ├── ServeStatement
+    │   │   │   └── Message (StringLiteral): "Large batch"
+    │   │   └── ScaleStatement
+    │   │       ├── Ingredient (Identifier): flour
+    │   │       └── Factor (Literal): 1.2
+    │   └── ElseBlock (StatementList: 1 statement)
+    │       └── ServeStatement
+    │           └── Message (StringLiteral): "Small batch"
+    ├── DisplayStatement
+    │   └── Variable (Identifier): servings
+    ├── DisplayStatement
+    │   └── Variable (Identifier): flour
+    ├── DisplayStatement
+    │   └── Variable (Identifier): water
+    ├── DeclarationStatement
+    │   ├── Variable: dough
+    │   ├── Type: INGREDIENT
+    │   └── Value (Expression):
+    │       RecipeCall(make_dough)
+    ├── RepeatStatement
+    │   ├── Count (Expression): Literal(2)
+    │   └── Body (StatementList: 1 statement)
+    │       └── MixStatement
+    │           └── Ingredients (IdentifierList)
+    │               └── Identifier: dough
+    ├── AddStatement
+    │   ├── Ingredient (Identifier): cheese
+    │   └── Target (Identifier): dough
+    ├── WhenStatement
+    │   ├── Condition (Expression):
+    │   │   BinaryExpression(GT, Identifier(oven), Literal(300))
+    │   └── ThenBlock (StatementList: 1 statement)
+    │       └── ServeStatement
+    │           └── Message (StringLiteral): "Oven ready!"
+    └── ServeStatement
+        └── Message (StringLiteral): "Done!"
+
+================================================================================
+PHASE 3: SEMANTIC ANALYSIS
+================================================================================
+
+Symbol Table:
+--------------------------------------------------------------------------------
+Name                 Type            Scope    Line       Context             
+--------------------------------------------------------------------------------
+make_dough           RECIPE          0        3          (function)          
+people               QUANTITY        0        10         (global)            
+servings             QUANTITY        0        13         (global)            
+flour                INGREDIENT      0        14         (global)            
+water                INGREDIENT      0        15         (global)            
+cheese               INGREDIENT      0        16         (global)            
+oven                 TEMP            0        17         (global)            
+dough                INGREDIENT      0        31         (global)            
+flour                INGREDIENT      1        3          (parameter)         
+water                INGREDIENT      1        3          (parameter)         
+mix_time             QUANTITY        1        4          (local)             
+extra                QUANTITY        1        20         (local)             
+
+Total Symbols: 12
+Semantic Analysis: PASSED
+
+================================================================================
+PHASE 4: INTERMEDIATE CODE GENERATION (TAC)
+================================================================================
+
+TAC Conventions:
+  - Units: Treated as value attributes (e.g., '2 minutes', '350 fahrenheit')
+  - Calls: Format 'result = CALL function, arg_count'
+  - Loops: Exit condition using '>=' with 'if_true' (makes exit explicit)
+
+Total TAC Instructions: 55
+
+Three-Address Code:
+--------------------------------------------------------------------------------
+   1: RECIPE make_dough:
+   2: mix_time = 2
+   3: mix flour, water
+   4: t0 = mix_time minutes
+   5: wait t0
+   6: RETURN flour
+   7: END_RECIPE make_dough
+   8: input people
+   9: serve "=== Quick Recipe ==="
+  10: t1 = people / 2
+  11: servings = t1
+  12: t2 = servings * 100
+  13: t3 = t2 grams
+  14: flour = t3
+  15: t4 = servings * 50
+  16: t5 = t4 ml
+  17: water = t5
+  18: t6 = servings * 30
+  19: t7 = t6 grams
+  20: cheese = t7
+  21: t8 = 350 fahrenheit
+  22: oven = t8
+  23: t9 = servings > 2
+  24: if_false t9 goto L0
+  25: extra = 20
+  26: serve "Large batch"
+  27: scale flour by 1.2
+  28: goto L1
+  29: L0:
+  30: serve "Small batch"
+  31: L1:
+  32: display servings
+  33: display flour
+  34: display water
+  35: PARAM flour
+  36: PARAM water
+  37: t10 = CALL make_dough, 2
+  38: dough = t10
+  39: t11 = 0
+  40: L2:
+  41: t12 = t11 >= 2
+  42: if_true t12 goto L3
+  43: mix dough
+  44: t13 = t11 + 1
+  45: t11 = t13
+  46: goto L2
+  47: L3:
+  48: add cheese to dough
+  49: t14 = oven > 300
+  50: if_false t14 goto L4
+  51: serve "Oven ready!"
+  52: goto L5
+  53: L4:
+  54: L5:
+  55: serve "Done!"
+
+================================================================================
+PHASE 5: CODE OPTIMIZATION
+================================================================================
+
+Original Instructions: 55
+Optimized Instructions: 55
+Instructions Removed: 0
+
+No optimizations applied (preserving correctness)
+
+Optimized Three-Address Code:
+--------------------------------------------------------------------------------
+   1: RECIPE make_dough:
+   2: mix_time = 2
+   3: mix flour, water
+   4: t0 = mix_time minutes
+   5: wait t0
+   6: RETURN flour
+   7: END_RECIPE make_dough
+   8: input people
+   9: serve "=== Quick Recipe ==="
+  10: t1 = people / 2
+  11: servings = t1
+  12: t2 = servings * 100
+  13: t3 = t2 grams
+  14: flour = t3
+  15: t4 = servings * 50
+  16: t5 = t4 ml
+  17: water = t5
+  18: t6 = servings * 30
+  19: t7 = t6 grams
+  20: cheese = t7
+  21: t8 = 350 fahrenheit
+  22: oven = t8
+  23: t9 = servings > 2
+  24: if_false t9 goto L0
+  25: extra = 20
+  26: serve "Large batch"
+  27: scale flour by 1.2
+  28: goto L1
+  29: L0:
+  30: serve "Small batch"
+  31: L1:
+  32: display servings
+  33: display flour
+  34: display water
+  35: PARAM flour
+  36: PARAM water
+  37: t10 = CALL make_dough, 2
+  38: dough = t10
+  39: t11 = 0
+  40: L2:
+  41: t12 = t11 >= 2
+  42: if_true t12 goto L3
+  43: mix dough
+  44: t13 = t11 + 1
+  45: t11 = t13
+  46: goto L2
+  47: L3:
+  48: add cheese to dough
+  49: t14 = oven > 300
+  50: if_false t14 goto L4
+  51: serve "Oven ready!"
+  52: goto L5
+  53: L4:
+  54: L5:
+  55: serve "Done!"
+
+================================================================================
+PHASE 6: CODE EXECUTION (RUNTIME)
+================================================================================
+
+Input: people = 6
+
+Execution Output:
+--------------------------------------------------------------------------------
+=== Quick Recipe ===
+Large batch
+Scaling flour by 1.2
+servings: 3.0
+flour: 360.0 grams
+water: 150.0 ml
+Mixing: flour, water
+Waiting for 2 minutes
+Mixing: dough
+Mixing: dough
+Adding cheese to dough
+Oven ready!
+Done!
+
+================================================================================
+PHASE 7: ASSEMBLY CODE (CONCEPTUAL)
+================================================================================
+
+Note: RecipeScript is interpreted, not compiled to assembly.
+Below is a conceptual representation of how TAC could map to assembly.
+
+Conceptual Assembly Mapping:
+--------------------------------------------------------------------------------
+; Recipe: calculate_baking_time
+calculate_baking_time:
+    PUSH BP              ; Save base pointer
+    MOV BP, SP           ; Set up stack frame
+    MOV [base_time], 12  ; base_time = 12
+    MOV AX, [pizzas]     ; Load pizzas
+    MOV BX, 2            ; Divisor
+    DIV BX               ; pizzas / 2
+    MOV [extra_time], AX ; Store result
+    ; ... (additional operations)
+    MOV AX, [result]     ; Load return value
+    POP BP               ; Restore base pointer
+    RET                  ; Return
+
+; Main program
+main:
+    CALL input_people    ; Get user input
+    MOV AX, [people]     ; Load people count
+    MOV BX, 2            ; Divisor
+    DIV BX               ; people / 2
+    MOV [pizzas], AX     ; Store pizzas
+    ; ... (ingredient calculations)
+    PUSH [pizzas]        ; Push arguments
+    PUSH [oven_value]
+    CALL calculate_baking_time
+    ADD SP, 4            ; Clean up stack
+    MOV [baking_time], AX
+    CALL display_output  ; Show results
+    HLT                  ; End program
+
+================================================================================
+COMPILATION SUMMARY
+================================================================================
+
+Source Lines: 43
+Tokens: 145
+Recipes: 1
+Variables: 12
+TAC Instructions: 55
+Optimized Instructions: 55
+
+Compilation Status: SUCCESS
+Execution Status: COMPLETED
+
+================================================================================
+END OF COMPILATION REPORT
+================================================================================

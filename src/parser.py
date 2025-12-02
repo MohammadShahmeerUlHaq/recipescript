@@ -15,10 +15,11 @@ class Program(ASTNode):
         self.statements = statements
 
 class Declaration(ASTNode):
-    def __init__(self, var_type, name, value):
+    def __init__(self, var_type, name, value, line=0):
         self.var_type = var_type
         self.name = name
         self.value = value
+        self.line = line
 
 class Assignment(ASTNode):
     def __init__(self, name, value):
@@ -91,15 +92,17 @@ class Value(ASTNode):
         self.unit = unit
 
 class InputStatement(ASTNode):
-    def __init__(self, var_name):
+    def __init__(self, var_name, line=0):
         self.var_name = var_name
+        self.line = line
 
 class RecipeDeclaration(ASTNode):
-    def __init__(self, name, params, return_type, body):
+    def __init__(self, name, params, return_type, body, line=0):
         self.name = name
         self.params = params
         self.return_type = return_type
         self.body = body
+        self.line = line
 
 class RecipeCall(ASTNode):
     def __init__(self, name, arguments):
@@ -207,13 +210,15 @@ class Parser:
     
     def parse_input(self):
         """Parse input statement"""
+        line = self.current_token.line
         self.expect(TokenType.INPUT)
         var_name = self.expect(TokenType.IDENTIFIER).value
         self.expect(TokenType.SEMICOLON)
-        return InputStatement(var_name)
+        return InputStatement(var_name, line)
     
     def parse_declaration(self):
         """Parse variable declaration"""
+        line = self.current_token.line
         var_type = self.current_token.type
         self.advance()
         
@@ -222,7 +227,7 @@ class Parser:
         value = self.parse_value()
         self.expect(TokenType.SEMICOLON)
         
-        return Declaration(var_type, name, value)
+        return Declaration(var_type, name, value, line)
     
     def parse_assignment(self):
         """Parse assignment statement"""
@@ -425,6 +430,7 @@ class Parser:
     
     def parse_recipe_declaration(self):
         """Parse recipe declaration"""
+        line = self.current_token.line
         self.expect(TokenType.RECIPE)
         name = self.expect(TokenType.IDENTIFIER).value
         self.expect(TokenType.LPAREN)
@@ -466,7 +472,7 @@ class Parser:
                 body.append(stmt)
         self.expect(TokenType.RBRACE)
         
-        return RecipeDeclaration(name, params, return_type, body)
+        return RecipeDeclaration(name, params, return_type, body, line)
     
     def parse_recipe_call(self):
         """Parse recipe call (as expression)"""
