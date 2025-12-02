@@ -263,12 +263,18 @@ class IntermediateCodeGenerator:
         return node.name
     
     def visit_Value(self, node):
-        """Visit value node"""
+        """
+        Visit value node (number with optional unit).
+        Handles both simple values and complex expressions with units.
+        
+        Returns:
+            str or number: The value, optionally formatted with its unit
+        """
         # Check if number is an AST node (expression) or a simple value
         if hasattr(node.number, '__class__'):
             class_name = node.number.__class__.__name__
             if class_name in ['BinaryOp', 'Number', 'Identifier']:
-                # It's an expression, visit it
+                # It's an expression, visit it to get the result
                 number_result = self.visit(node.number)
             else:
                 # It's a simple string value
@@ -276,9 +282,14 @@ class IntermediateCodeGenerator:
         else:
             number_result = node.number
         
+        # If there's a unit, we need to create a temp variable to store
+        # the numeric value, then create a formatted string with the unit
         if node.unit:
             unit_str = str(node.unit).split('.')[-1].lower()
-            return f"{number_result} {unit_str}"
+            # Create a temp to hold the formatted value
+            temp = self.new_temp()
+            self.emit('assign', f"{number_result} {unit_str}", None, temp)
+            return temp
         return number_result
     
     def visit_RecipeDeclaration(self, node):

@@ -185,7 +185,8 @@ class CodeGenerator:
             print(msg)
         
         elif instr.op == 'wait':
-            msg = f"Waiting for {instr.arg1}"
+            duration = self.get_value(instr.arg1)
+            msg = f"Waiting for {duration}"
             self.output.append(msg)
             print(msg)
         
