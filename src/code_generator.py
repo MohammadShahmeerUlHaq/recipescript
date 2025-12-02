@@ -84,11 +84,20 @@ class CodeGenerator:
         
         elif instr.op == 'assign':
             value = self.get_value(instr.arg1)
-            # If assigning a temp variable value, resolve it
-            if isinstance(value, str) and value.startswith('t') and value[1:].isdigit():
-                # It's a temp variable reference, get its value
+            
+            # Handle "variable_name unit" (e.g., "adjusted minutes")
+            if isinstance(value, str) and ' ' in value:
+                parts = value.split(None, 1)
+                if parts[0] in self.variables:
+                    resolved_value = self.variables[parts[0]]
+                    value = f"{resolved_value} {parts[1]}"
+                elif parts[0].startswith('t') and parts[0][1:].isdigit() and parts[0] in self.variables:
+                    resolved_value = self.variables[parts[0]]
+                    value = f"{resolved_value} {parts[1]}"
+            elif isinstance(value, str) and value.startswith('t') and value[1:].isdigit():
                 if value in self.variables:
                     value = self.variables[value]
+            
             self.variables[instr.result] = value
         
         elif instr.op == 'add':
@@ -209,6 +218,23 @@ class CodeGenerator:
                             if parts[0] in self.variables:
                                 resolved_val = self.variables[parts[0]]
                                 value = f"{resolved_val} {' '.join(parts[1:])}"
+                
+                # Clean up floating point precision errors
+                if isinstance(value, str):
+                    parts = value.split()
+                    if len(parts) >= 1:
+                        try:
+                            num = float(parts[0])
+                            # Round to 1 decimal place if close to it
+                            if abs(num - round(num, 1)) < 0.0001:
+                                num = round(num, 1)
+                            value = f"{num} {' '.join(parts[1:])}" if len(parts) > 1 else num
+                        except ValueError:
+                            pass
+                elif isinstance(value, float):
+                    if abs(value - round(value, 1)) < 0.0001:
+                        value = round(value, 1)
+                
                 msg = f"{var_name}: {value}"
                 self.output.append(msg)
                 print(msg)
@@ -291,6 +317,9 @@ class CodeGenerator:
             result = self.execute_instruction(instr, instructions)
             if result and isinstance(result, tuple) and result[0] == 'return':
                 return_value = result[1]
+                # Resolve variable reference in return value
+                if isinstance(return_value, str) and return_value in self.variables:
+                    return_value = self.variables[return_value]
                 break
             
             self.pc += 1
