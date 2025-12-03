@@ -10,12 +10,19 @@ class SymbolTable:
     def __init__(self):
         self.symbols = {}
         self.scope_level = 0
+        self.current_recipe = None
     
-    def declare(self, name, var_type, line=0, is_parameter=False):
+    def declare(self, name, var_type, line=0, is_parameter=False, recipe_name=None):
         """Declare a new variable"""
-        # Check if variable already exists in CURRENT scope with same qualified name
-        qualified_name = f"{name}_scope{self.scope_level}" if self.scope_level > 0 else name
+        # For recipe parameters and local variables, include recipe name in qualified name
+        if self.scope_level > 0 and recipe_name:
+            qualified_name = f"{name}_recipe_{recipe_name}"
+        elif self.scope_level > 0:
+            qualified_name = f"{name}_scope{self.scope_level}"
+        else:
+            qualified_name = name
         
+        # Check if variable already exists with same qualified name
         if qualified_name in self.symbols:
             raise Exception(f"Semantic Error at line {line}: Variable '{name}' already declared in current scope")
         
@@ -25,12 +32,19 @@ class SymbolTable:
             'scope': self.scope_level,
             'line': line,
             'original_name': name,
-            'is_parameter': is_parameter
+            'is_parameter': is_parameter,
+            'recipe_name': recipe_name
         }
     
     def lookup(self, name, line=0):
         """Look up a variable - search from current scope outward"""
-        # Try current scope first
+        # If in a recipe scope, try recipe-qualified name first
+        if self.scope_level > 0 and self.current_recipe:
+            qualified_name = f"{name}_recipe_{self.current_recipe}"
+            if qualified_name in self.symbols:
+                return self.symbols[qualified_name]
+        
+        # Try current scope
         qualified_name = f"{name}_scope{self.scope_level}" if self.scope_level > 0 else name
         if qualified_name in self.symbols:
             return self.symbols[qualified_name]
@@ -89,6 +103,8 @@ class SemanticAnalyzer:
         self.recipe_table = {}  # Store recipe definitions
         self.current_recipe = None  # Track current recipe being analyzed
         self.errors = []
+        # Share current_recipe with symbol table for lookups
+        self.symbol_table.current_recipe = None
     
     def error(self, msg):
         """Record semantic error"""
@@ -112,17 +128,17 @@ class SemanticAnalyzer:
     
     def visit_Program(self, node):
         """Visit program node"""
-        # First pass: Register all recipes
+        # First pass: Register all recipes (just names, not bodies)
         for recipe in node.recipes:
             self.register_recipe(recipe)
         
-        # Second pass: Analyze recipe bodies
-        for recipe in node.recipes:
-            self.visit(recipe)
-        
-        # Third pass: Analyze main statements
+        # Second pass: Analyze main statements (declare global variables)
         for stmt in node.statements:
             self.visit(stmt)
+        
+        # Third pass: Analyze recipe bodies (now globals are declared)
+        for recipe in node.recipes:
+            self.visit(recipe)
     
     def visit_InputStatement(self, node):
         """Visit input statement"""
@@ -288,14 +304,15 @@ class SemanticAnalyzer:
     def visit_RecipeDeclaration(self, node):
         """Visit recipe declaration"""
         self.current_recipe = node.name
+        self.symbol_table.current_recipe = node.name
         
         # Create new scope for recipe
         self.symbol_table.enter_scope()
         
-        # Add parameters to symbol table (they will have scope 1)
+        # Add parameters to symbol table with recipe name
         line = getattr(node, 'line', 0)
         for param in node.params:
-            self.symbol_table.declare(param['name'], param['type'], line, is_parameter=True)
+            self.symbol_table.declare(param['name'], param['type'], line, is_parameter=True, recipe_name=node.name)
         
         # Analyze recipe body
         has_return = False
@@ -311,6 +328,7 @@ class SemanticAnalyzer:
         # Exit recipe scope (but variables are kept in symbol table)
         self.symbol_table.exit_scope()
         self.current_recipe = None
+        self.symbol_table.current_recipe = None
     
     def visit_RecipeCall(self, node):
         """Visit recipe call"""
