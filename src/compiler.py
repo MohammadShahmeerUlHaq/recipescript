@@ -102,17 +102,17 @@ def run_file(filename):
         success = compile_and_run(source_code, show_phases=True)
         
         if success:
-            print(f"\n✅ Successfully compiled and executed {filename}")
+            print(f"\n[SUCCESS] Successfully compiled and executed {filename}")
         else:
-            print(f"\n❌ Failed to compile {filename}")
+            print(f"\n[FAILED] Failed to compile {filename}")
         
         return success
         
     except FileNotFoundError:
-        print(f"❌ Error: File '{filename}' not found")
+        print(f"[ERROR] File '{filename}' not found")
         return False
     except Exception as e:
-        print(f"❌ Error reading file: {e}")
+        print(f"[ERROR] Error reading file: {e}")
         return False
 
 def interactive_mode():
