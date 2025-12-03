@@ -14,14 +14,21 @@ from compiler import run_file
 def main():
     """Run all test files"""
     test_files = [
-        'test1.recipe',
-        'test2.recipe',
-        'test3.recipe',
-        'test4.recipe',
-        'test5.recipe',
-        'test6.recipe',
-        'test7_input_auto.recipe',
-        'test8_functions.recipe',
+        'simple_cookies.recipe',
+        'rice_arithmetic.recipe',
+        'oven_conditional.recipe',
+        'knead_dough_repeat.recipe',
+        'tomato_sauce.recipe',
+        'cake_temperature.recipe',
+        'cookies_input_scaling.recipe',
+        'cookies_dynamic_message.recipe',
+        'dough_functions.recipe',
+        'bread.recipe',
+        'pasta.recipe',
+        'chocolate_cookies.recipe',
+        'pizza_long.recipe',
+        'pizza.recipe',
+        'sample.recipe',
     ]
     
     print("=" * 60)
@@ -38,7 +45,7 @@ def main():
             success = run_file(test_file)
             results.append((test_file, success))
         else:
-            print(f"\n❌ Test file not found: {test_file}")
+            print(f"\n[ERROR] Test file not found: {test_file}")
             results.append((test_file, False))
     
     # Summary
@@ -50,15 +57,15 @@ def main():
     total = len(results)
     
     for test_file, success in results:
-        status = "✅ PASS" if success else "❌ FAIL"
+        status = "[PASS]" if success else "[FAIL]"
         print(f"{status} - {test_file}")
     
     print(f"\nTotal: {passed}/{total} tests passed")
     
     if passed == total:
-        print("\n🎉 All tests passed!")
+        print("\n[SUCCESS] All tests passed!")
     else:
-        print(f"\n⚠️  {total - passed} test(s) failed")
+        print(f"\n[WARNING] {total - passed} test(s) failed")
 
 if __name__ == "__main__":
     main()
