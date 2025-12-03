@@ -262,7 +262,9 @@ class CodeGenerator:
             print(msg)
         
         elif instr.op == 'heat':
-            msg = f"Heating {instr.arg1} to {instr.arg2}"
+            target = instr.arg1
+            temperature = self.get_value(instr.arg2)
+            msg = f"Heating {target} to {temperature}"
             self.output.append(msg)
             print(msg)
         
